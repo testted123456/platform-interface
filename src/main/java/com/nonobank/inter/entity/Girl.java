@@ -1,0 +1,45 @@
+package com.nonobank.inter.entity;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+public class Girl {
+	
+	@Id
+	@GeneratedValue
+	Integer id;
+	
+	String cupSize;
+	
+	Integer age;
+	
+	public Girl(){
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getCupSize() {
+		return cupSize;
+	}
+
+	public void setCupSize(String cupSize) {
+		this.cupSize = cupSize;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+}
