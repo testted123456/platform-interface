@@ -1,33 +1,42 @@
 package com.nonobank.inter.entity;
 
 import java.time.LocalDateTime;
-import com.alibaba.fastjson.JSONObject;
+import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotEmpty;
+import com.alibaba.fastjson.JSONArray;
 
 public class InterfaceDefinitionFront {
 	
 	Integer id;
 	
+	@NotEmpty(message="接口名称不能为空")
 	String name;
 	
 	String description;
 	
+	@NotNull(message="接口父节点不能为空")
 	Integer pId;
 	
+	@NotEmpty(message="系统不能为空")
 	String System;
 	
 	String module;
 	
+	@NotEmpty(message="接口分支不能为空")
 	String branch;
 	
+	@NotEmpty(message="接口地址不能为空")
 	String urlAddress;
 	
+	@NotNull(message="接口类型不能为空")
 	Character apiType;
 	
+	@NotNull(message="接点类型不能为空")
 	Boolean type;
 	
 	Character postWay;
 	
-	JSONObject requestHead;
+	JSONArray requestHead;
 	
 	Character requestBodyType;
 	
@@ -35,8 +44,9 @@ public class InterfaceDefinitionFront {
 	
 	String requestBody;
 	
-	JSONObject responseHead;
+	JSONArray responseHead;
 	
+	@NotNull(message="响应类型不能为空")
 	Character responseBodyType;
 	
 	String responseBody;
@@ -107,11 +117,11 @@ public class InterfaceDefinitionFront {
 		this.postWay = postWay;
 	}
 
-	public JSONObject getRequestHead() {
+	public JSONArray getRequestHead() {
 		return requestHead;
 	}
 
-	public void setRequestHead(JSONObject requestHead) {
+	public void setRequestHead(JSONArray requestHead) {
 		this.requestHead = requestHead;
 	}
 
@@ -139,11 +149,11 @@ public class InterfaceDefinitionFront {
 		this.requestBody = requestBody;
 	}
 
-	public JSONObject getResponseHead() {
+	public JSONArray getResponseHead() {
 		return responseHead;
 	}
 
-	public void setResponseHead(JSONObject responseHead) {
+	public void setResponseHead(JSONArray responseHead) {
 		this.responseHead = responseHead;
 	}
 

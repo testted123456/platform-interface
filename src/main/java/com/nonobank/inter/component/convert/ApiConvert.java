@@ -1,6 +1,6 @@
 package com.nonobank.inter.component.convert;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import com.nonobank.inter.entity.InterfaceDefinition;
 import com.nonobank.inter.entity.InterfaceDefinitionFront;
 
@@ -62,7 +62,7 @@ public class ApiConvert {
 			apiFront.setPostWay(api.getPostWay());
 			
 			if(api.getRequestHead() != null){
-				apiFront.setRequestHead(JSONObject.parseObject(api.getRequestHead()));
+				apiFront.setRequestHead(JSONArray.parseArray(api.getRequestHead()));
 			}
 			
 			apiFront.setRequestBodyType(apiFront.getRequestBodyType());
@@ -70,7 +70,7 @@ public class ApiConvert {
 			apiFront.setRequestBody(apiFront.getRequestBody());
 			
 			if(api.getResponseHead() != null){
-				apiFront.setResponseHead(JSONObject.parseObject(api.getResponseHead()));
+				apiFront.setResponseHead(JSONArray.parseArray(api.getResponseHead()));
 			}
 			
 			apiFront.setResponseBody(api.getResponseBody());
