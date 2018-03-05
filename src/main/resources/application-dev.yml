@@ -1,10 +1,8 @@
 server:
  port: 8082
  context-path: /inter
-girl:
- cupSize: B
- age: 18
- content: "cupSize is ${girl.cupSize}, age is ${girl.age}"
+httpServer:
+  caseServer: http://localhost:8083/case/
 spring:
   datasource:
     url: jdbc:mysql://192.168.1.51:3306/platform?useUnicode=true&amp;characterEncoding=utf-8

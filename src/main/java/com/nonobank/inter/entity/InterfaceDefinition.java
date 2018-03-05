@@ -16,33 +16,26 @@ public class InterfaceDefinition {
 	@GeneratedValue
 	Integer id;
 	
-	@NotEmpty(message="接口名称不能为空")
 	@Column(nullable=false, columnDefinition="varchar(300) COMMENT '接口名称'")
 	String name;
 	
 	String description;
 	
-	@NotNull(message="接口父节点不能为空")
 	@Column(nullable=false, columnDefinition="bigint(20) COMMENT '接口父节点'")
 	Integer pId;
 	
-	@NotEmpty(message="系统不能为空")
 	String System;
 	
 	String module;
 	
-	@NotEmpty(message="接口分支不能为空")
 	String branch;
 	
-	@NotEmpty(message="接口地址不能为空")
 	String urlAddress;
 	
-	@NotEmpty(message="接口类型不能为空")
 	@Column(columnDefinition="char(1) COMMENT '0:Http;1:Https;2:MQ'")
 	Character apiType;
 	
-	@NotNull(message="接点类型不能为空")
-	@Column(nullable=false, columnDefinition="bit(1) COMMENT '0:目录，1:api'")
+	@Column(nullable=true, columnDefinition="bit(1) COMMENT '0:目录，1:api'")
 	Boolean type;
 	
 	@Column(columnDefinition="char(1) COMMENT '0:get，1:post'")
@@ -63,7 +56,6 @@ public class InterfaceDefinition {
 	@Column(columnDefinition=" varchar(255)")
 	String responseHead;
 	
-	@NotNull(message="响应类型不能为空")
 	@Column(columnDefinition="char(1) COMMENT '0:josn;1:text;2:html;3:xml'")
 	Character responseBodyType;
 	

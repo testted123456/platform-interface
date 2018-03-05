@@ -35,6 +35,7 @@ public class ApiConvert {
 			}
 			
 			api.setResponseBody(apiFront.getResponseBody());
+			api.setResponseBodyType(apiFront.getResponseBodyType());
 			api.setCreatedBy(apiFront.getCreatedBy());
 			api.setCreatedTime(apiFront.getCreatedTime());
 			api.setUpdatedBy(apiFront.getUpdatedBy());
@@ -65,15 +66,16 @@ public class ApiConvert {
 				apiFront.setRequestHead(JSONArray.parseArray(api.getRequestHead()));
 			}
 			
-			apiFront.setRequestBodyType(apiFront.getRequestBodyType());
-			apiFront.setRequestBodyRowType(apiFront.getRequestBodyRowType());
-			apiFront.setRequestBody(apiFront.getRequestBody());
+			apiFront.setRequestBodyType(api.getRequestBodyType());
+			apiFront.setRequestBodyRowType(api.getRequestBodyRowType());
+			apiFront.setRequestBody(api.getRequestBody());
 			
 			if(api.getResponseHead() != null){
 				apiFront.setResponseHead(JSONArray.parseArray(api.getResponseHead()));
 			}
 			
 			apiFront.setResponseBody(api.getResponseBody());
+			apiFront.setResponseBodyType(api.getResponseBodyType());
 			apiFront.setCreatedBy(api.getCreatedBy());
 			apiFront.setCreatedTime(api.getCreatedTime());
 			apiFront.setUpdatedBy(api.getUpdatedBy());

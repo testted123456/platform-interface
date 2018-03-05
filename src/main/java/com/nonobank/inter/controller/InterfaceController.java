@@ -44,7 +44,7 @@ public class InterfaceController {
 		logger.info("开始新增接口目录");
 		
 		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
-		interfaceDefinition.setType(true);
+		interfaceDefinition.setType(false);
 		interfaceDefinition.setOptstatus((short)0);
 		InterfaceDefinition api = interfaceDefinitionService.add(interfaceDefinition);
 		
@@ -70,6 +70,7 @@ public class InterfaceController {
 			return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(), erroMsg);
 		}else{
 			interfaceDefinition.setOptstatus((short)0);
+			interfaceDefinition.setType(true);
 			InterfaceDefinition api = interfaceDefinitionService.add(interfaceDefinition);
 			logger.info("开始新增接口成功，接口ID：", api.getId());
 			return ResultUtil.success(api);
