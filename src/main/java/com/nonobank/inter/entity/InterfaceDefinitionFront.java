@@ -53,7 +53,7 @@ public class InterfaceDefinitionFront {
 	
 	String createdBy;
 	
-	LocalDateTime createdTime;
+	String createdTime;
 	
 	String updatedBy;
 	
@@ -181,11 +181,11 @@ public class InterfaceDefinitionFront {
 		this.createdBy = createdBy;
 	}
 
-	public LocalDateTime getCreatedTime() {
+	public String getCreatedTime() {
 		return createdTime;
 	}
 
-	public void setCreatedTime(LocalDateTime createdTime) {
+	public void setCreatedTime(String createdTime) {
 		this.createdTime = createdTime;
 	}
 

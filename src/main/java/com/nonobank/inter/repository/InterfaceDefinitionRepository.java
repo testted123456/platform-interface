@@ -12,4 +12,6 @@ public interface InterfaceDefinitionRepository extends JpaRepository<InterfaceDe
 	
 	List<InterfaceDefinition> findByIdAndBranchAndOptstatusEquals(Integer id, String branch, short optstatus);
 	
+	List<InterfaceDefinition> findBySystemAndModuleAndUrlAddressAndOptstatus(String system, String module, String urlAddress, short optstatus);
+	
 }

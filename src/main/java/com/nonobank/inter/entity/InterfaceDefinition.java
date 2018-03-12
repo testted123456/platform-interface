@@ -5,9 +5,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 public class InterfaceDefinition {
@@ -24,7 +21,7 @@ public class InterfaceDefinition {
 	@Column(nullable=false, columnDefinition="bigint(20) COMMENT '接口父节点'")
 	Integer pId;
 	
-	String System;
+	String system;
 	
 	String module;
 	
@@ -228,11 +225,11 @@ public class InterfaceDefinition {
 	}
 
 	public String getSystem() {
-		return System;
+		return system;
 	}
 
 	public void setSystem(String system) {
-		System = system;
+		this.system = system;
 	}
 
 	public String getModule() {
