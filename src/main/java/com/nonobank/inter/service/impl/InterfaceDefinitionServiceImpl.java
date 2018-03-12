@@ -12,7 +12,8 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 
 	@Autowired
 	InterfaceDefinitionRepository interfaceDefinitionRepository;
-	
+
+	@Override
 	public List<InterfaceDefinition> findByPId(Integer pId){
 		return interfaceDefinitionRepository.findByPIdAndOptstatusEquals(pId, (short)0);
 	}
