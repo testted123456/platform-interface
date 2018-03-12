@@ -1,5 +1,7 @@
 package com.nonobank.inter.component.convert;
 
+import java.time.format.DateTimeFormatter;
+
 import com.alibaba.fastjson.JSONArray;
 import com.nonobank.inter.entity.InterfaceDefinition;
 import com.nonobank.inter.entity.InterfaceDefinitionFront;
@@ -36,10 +38,10 @@ public class ApiConvert {
 			
 			api.setResponseBody(apiFront.getResponseBody());
 			api.setResponseBodyType(apiFront.getResponseBodyType());
-			api.setCreatedBy(apiFront.getCreatedBy());
-			api.setCreatedTime(apiFront.getCreatedTime());
-			api.setUpdatedBy(apiFront.getUpdatedBy());
-			api.setUpdatedTime(apiFront.getUpdatedTime());
+//			api.setCreatedBy(apiFront.getCreatedBy());
+//			api.setCreatedTime(apiFront.getCreatedTime());
+//			api.setUpdatedBy(apiFront.getUpdatedBy());
+//			api.setUpdatedTime(apiFront.getUpdatedTime());
 			api.setOptstatus(apiFront.getOptstatus());
 		}
 		
@@ -77,7 +79,11 @@ public class ApiConvert {
 			apiFront.setResponseBody(api.getResponseBody());
 			apiFront.setResponseBodyType(api.getResponseBodyType());
 			apiFront.setCreatedBy(api.getCreatedBy());
-			apiFront.setCreatedTime(api.getCreatedTime());
+			
+			if(null != api.getCreatedTime()){
+				apiFront.setCreatedTime(api.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
+			}
+			
 			apiFront.setUpdatedBy(api.getUpdatedBy());
 			apiFront.setUpdatedTime(api.getUpdatedTime());
 			apiFront.setOptstatus(api.getOptstatus());
