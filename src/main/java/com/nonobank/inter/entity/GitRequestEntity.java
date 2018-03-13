@@ -21,6 +21,13 @@ public class GitRequestEntity {
     @Length(message = "系统不能为空",min = 1,groups = {ValidateSyncApi.class,ValidateGetBranchs.class})
     private String system;
 
+
+    @NotNull(message = "别名不能为空",groups = {ValidateSyncApi.class})
+    @Length(message = "别名不能为空",min = 1,groups = {ValidateSyncApi.class})
+    private String alias;
+
+
+
     @NotNull(message = "git地址不能为空",groups = {ValidateSyncApi.class,ValidateGetBranchs.class})
     @Length(message = "git地址不能为空",min = 1,groups = {ValidateSyncApi.class,ValidateGetBranchs.class})
     private String gitAddress;
@@ -63,5 +70,13 @@ public class GitRequestEntity {
 
     public void setVersionCode(String versionCode) {
         this.versionCode = versionCode;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 }

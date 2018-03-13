@@ -14,5 +14,5 @@ public interface GitService {
 
     public List<Object> getRemoteRepositories(String system,String gitAddress) throws GitAPIException;
 
-    public void syncBranch(String system, String gitAddress, String branch, String versionCode) throws GitAPIException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException;
+    public void syncBranch(String system,String alias, String gitAddress, String branch, String versionCode) throws GitAPIException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException;
 }

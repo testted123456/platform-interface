@@ -1,8 +1,7 @@
 package com.nonobank.inter.service.impl;
 
-import com.nonobank.inter.component.result.Result;
-import com.nonobank.inter.component.result.ResultUtil;
 import com.nonobank.inter.component.sync.IfromAComponent;
+import com.nonobank.inter.component.sync.SyncContext;
 import com.nonobank.inter.service.GitService;
 import com.nonobank.inter.util.FileUtil;
 import com.nonobank.inter.util.GitUtil;
@@ -12,6 +11,7 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationHome;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -86,7 +86,7 @@ class GitServiceImpl implements GitService {
     /**
      * 同步分支信息
      *
-     * @param system      系统萌宠
+     * @param alias       系统萌宠
      * @param gitAddress  git地址
      * @param branch      分支名称
      * @param versionCode 版本号
@@ -94,7 +94,9 @@ class GitServiceImpl implements GitService {
      * @throws IOException
      */
     @Override
-    public void syncBranch(String system, String gitAddress, String branch, String versionCode) throws GitAPIException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    @Async
+    public void syncBranch(String system, String alias, String gitAddress, String branch, String versionCode) throws GitAPIException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        SyncContext.INSTANCE.getMap().put(system + branch, "running");
         CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
         String remoteVersionCode = GitUtil.getGitBranchVersionCode(gitAddress, branch, credentialsProvider);
         if (versionCode.equals(remoteVersionCode)) {
@@ -126,7 +128,8 @@ class GitServiceImpl implements GitService {
 
         String apiDataContent = FileUtil.readFile(apidataJsonPath);
         String projectContent = FileUtil.readFile(projectJsonPath);
-        ifromAComponent.syncApidoc(system, gitAddress, projectContent, apiDataContent);
+        ifromAComponent.syncApidoc(alias, branch, projectContent, apiDataContent);
+        SyncContext.INSTANCE.getMap().remove(system + branch);
 
     }
 
