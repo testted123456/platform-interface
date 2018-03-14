@@ -200,18 +200,12 @@ public class InterfaceController {
 		return ResultUtil.success(frontInterfaceDefinitions);
 	}
 	
-	@GetMapping(value="getSameApis")
+	@GetMapping(value="getLastApis")
 	@ResponseBody
-	public Result getSameApis(@RequestParam Integer id){
+	public Result getLastApi(@RequestParam String system, @RequestParam String module, @RequestParam String urlAddress){
 		logger.info("根据id获取相同api");
-		
-		InterfaceDefinition api = interfaceDefinitionService.findById(id);
-		String system = api.getSystem();
-		String module = api.getModule();
-		String urlAddress = api.getUrlAddress();
-		List<InterfaceDefinition> apis = interfaceDefinitionService.findBySystemAndModuleAndUrlAddress(system, module, urlAddress);
-		
-		return ResultUtil.success(apis);
+		InterfaceDefinition api = interfaceDefinitionService.findBySystemAndModuleAndUrlAddress(system, module, urlAddress);
+		return ResultUtil.success(api);
 	}
 	
 }

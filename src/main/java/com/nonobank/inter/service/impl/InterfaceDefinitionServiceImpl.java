@@ -66,7 +66,7 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 	}
 
 	@Override
-	public List<InterfaceDefinition> findBySystemAndModuleAndUrlAddress(String system, String module, String urlAddress) {
+	public InterfaceDefinition findBySystemAndModuleAndUrlAddress(String system, String module, String urlAddress) {
 		return interfaceDefinitionRepository.findBySystemAndModuleAndUrlAddressAndOptstatus(system, module, urlAddress, (short)0);
 	}
 	

@@ -13,7 +13,7 @@ public interface InterfaceDefinitionService {
 	
 	List<InterfaceDefinition> findByIdAndBranch(Integer id, String branch);
 	
-	List<InterfaceDefinition> findBySystemAndModuleAndUrlAddress(String system, String module, String urlAddress);
+	InterfaceDefinition findBySystemAndModuleAndUrlAddress(String system, String module, String urlAddress);
 	
 	InterfaceDefinition add(InterfaceDefinition interfaceDefinition);
 	
