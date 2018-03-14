@@ -1,15 +1,28 @@
 package com.nonobank.inter.controller;
 
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+
+import com.nonobank.inter.component.sync.SyncContext;
+import com.nonobank.inter.entity.GitRequestEntity;
+import com.nonobank.inter.service.GitService;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+
+import org.springframework.validation.annotation.Validated;
+
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,18 +40,30 @@ import com.nonobank.inter.entity.InterfaceDefinitionFront;
 import com.nonobank.inter.service.InterfaceDefinitionService;
 
 @Controller
-@RequestMapping(value="api")
+@RequestMapping(value = "api")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class InterfaceController {
+
+
+
+
+
+
+
+
+
 	
 	public static Logger logger = LoggerFactory.getLogger(InterfaceController.class);
 	
 	@Autowired
 	InterfaceDefinitionService interfaceDefinitionService;
+
+	@Autowired
+	private GitService gitService;
 	
 	/**
 	 * 新增api目录节点
-	 * @param interfaceDefinition
+	 * @param
 	 * @return
 	 */
 	@PostMapping(value="addApiDir")
@@ -58,7 +83,7 @@ public class InterfaceController {
 	
 	/**
 	 * 新增api
-	 * @param interfaceDetail
+	 * @param
 	 * @return
 	 */
 	@PostMapping(value="addApi")
@@ -206,6 +231,54 @@ public class InterfaceController {
 		logger.info("根据id获取相同api");
 		InterfaceDefinition api = interfaceDefinitionService.findBySystemAndModuleAndUrlAddress(system, module, urlAddress);
 		return ResultUtil.success(api);
+	}
+
+	/**
+	 * 根据父节点Id查询子节点树
+	 *
+	 *
+	 * @param
+	 * @param
+	 * @return
+	 */
+	@PostMapping(value = "getBranchs")
+	@ResponseBody
+	public Result getBranchs(@RequestBody @Validated(GitRequestEntity.ValidateGetBranchs.class) GitRequestEntity gitSyncEntity, BindingResult bindingResult) throws GitAPIException {
+		logger.info("开始获取git远程分支");
+		if (bindingResult.hasErrors()) {
+			String erroMsg = bindingResult.getAllErrors().get(0).getDefaultMessage();
+			logger.error("获取远程分支失败：{}", erroMsg);
+			return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(), erroMsg);
+		} else {
+			List<Object> list = gitService.getRemoteRepositories(gitSyncEntity.getSystem(), gitSyncEntity.getGitAddress());
+			return ResultUtil.success(list);
+		}
+	}
+
+
+	/**
+	 * 根据父节点Id查询子节点树
+	 *
+	 *
+	 * @param
+	 * @param
+	 * @return
+	 */
+	@PostMapping(value = "syncApidoc")
+	@ResponseBody
+	public Result syncApidoc(@RequestBody @Validated(GitRequestEntity.ValidateSyncApi.class) GitRequestEntity gitSyncEntity, BindingResult bindingResult) throws GitAPIException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
+		logger.info("开始获取git远程分支");
+		if (SyncContext.INSTANCE.getMap().get(gitSyncEntity.getSystem()+gitSyncEntity.getBranch())!=null){
+			return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(),"系统正在执行中，请稍等");
+		}
+		if (bindingResult.hasErrors()) {
+			String erroMsg = bindingResult.getAllErrors().get(0).getDefaultMessage();
+			logger.error("获取远程分支失败：{}", erroMsg);
+			return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(), erroMsg);
+		}
+		gitService.syncBranch(gitSyncEntity.getSystem(),gitSyncEntity.getAlias(),gitSyncEntity.getGitAddress(),gitSyncEntity.getBranch(),gitSyncEntity.getVersionCode());
+		return ResultUtil.success();
+
 	}
 	
 }
