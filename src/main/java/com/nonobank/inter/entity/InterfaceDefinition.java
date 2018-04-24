@@ -1,6 +1,7 @@
 package com.nonobank.inter.entity;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -191,13 +192,43 @@ public class InterfaceDefinition {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-
-	public LocalDateTime getCreatedTime() {
-		return createdTime;
+	
+	public void setCreatedTime(String createdTime){
+		if(null != createdTime){
+			this.createdTime = LocalDateTime.parse(createdTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		}
 	}
 
 	public void setCreatedTime(LocalDateTime createdTime) {
 		this.createdTime = createdTime;
+	}
+
+	public String getCreatedTime() {
+		
+		if(null != this.createdTime){
+			return this.createdTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		}else{
+			return null;
+		}
+	}
+	
+	public String getUpdatedTime() {
+		if(null != this.updatedTime){
+			return this.updatedTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		}else{
+			return null;
+		}
+	}
+
+	public void setUpdatedTime(String updatedTime) {
+		if(null != this.updatedTime){
+			LocalDateTime t = LocalDateTime.parse(updatedTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			this.updatedTime = t;
+		}
+	}
+	
+	public void setUpdatedTime(LocalDateTime updatedTime){
+		this.updatedTime = updatedTime;
 	}
 
 	public String getUpdatedBy() {
@@ -208,14 +239,6 @@ public class InterfaceDefinition {
 		this.updatedBy = updatedBy;
 	}
 	
-	public LocalDateTime getUpdatedTime() {
-		return updatedTime;
-	}
-
-	public void setUpdatedTime(LocalDateTime updatedTime) {
-		this.updatedTime = updatedTime;
-	}
-
 	public Integer getpId() {
 		return pId;
 	}

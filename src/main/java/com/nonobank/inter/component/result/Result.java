@@ -1,7 +1,13 @@
 package com.nonobank.inter.component.result;
 
-public class Result {
+import java.io.Serializable;
 
+public class Result implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6946093044730138913L;
 	private String msg;
 	private int code;
 	private Object data;
@@ -28,6 +34,15 @@ public class Result {
 
 	public void setData(Object data) {
 		this.data = data;
+	}
+	
+	public String toString(){
+		return "{" +
+				"\"code\":" + code + "," +
+				"\"msg\":\"" + msg + "\"," +
+				"\"data:\"" + data
+				+ "}"
+				;
 	}
 
 }

@@ -40,7 +40,7 @@ public class InterfaceApplicationTests {
 	@Test
 	public void contextLoads() throws IOException, GitAPIException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
-		gitService.syncBranch("acc","http://git.nonobank.com/trd-pay-acc/acc.git","develop","00");
+//		gitService.syncBranch("acc","http://git.nonobank.com/trd-pay-acc/acc.git","develop","00");
 
 //		File path = new File(ResourceUtils.getURL("classpath:").getPath());
 //		System.out.println(path.getAbsolutePath());
@@ -52,8 +52,6 @@ public class InterfaceApplicationTests {
 //
 //		System.out.println(codePath);
 
-
-
 	}
 
 	@Test
@@ -64,7 +62,7 @@ public class InterfaceApplicationTests {
 		interfaceDefinition.setPostWay('1');
 		interfaceDefinition.setOptstatus((short)1);
 
-		interfaceDefinition.setCreatedTime(LocalDateTime.now());
+//		interfaceDefinition.setCreatedTime(LocalDateTime.now());
 
 		interfaceDefinitionRepository.save(interfaceDefinition);
 

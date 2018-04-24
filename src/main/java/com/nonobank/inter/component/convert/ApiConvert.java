@@ -81,11 +81,11 @@ public class ApiConvert {
 			apiFront.setCreatedBy(api.getCreatedBy());
 			
 			if(null != api.getCreatedTime()){
-				apiFront.setCreatedTime(api.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
+//				apiFront.setCreatedTime(api.getCreatedTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
 			}
 			
 			apiFront.setUpdatedBy(api.getUpdatedBy());
-			apiFront.setUpdatedTime(api.getUpdatedTime());
+//			apiFront.setUpdatedTime(api.getUpdatedTime());
 			apiFront.setOptstatus(api.getOptstatus());
 		}
 		

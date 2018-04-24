@@ -13,11 +13,13 @@ public interface InterfaceDefinitionService {
 	
 	List<InterfaceDefinition> findByIdAndBranch(Integer id, String branch);
 	
-	InterfaceDefinition findBySystemAndModuleAndUrlAddress(String system, String module, String urlAddress);
+	InterfaceDefinition findBySystemAndModuleAndUrlAddress(String system, String module, String urlAddress, String branch);
 	
 	InterfaceDefinition add(InterfaceDefinition interfaceDefinition);
 	
 	InterfaceDefinition update(InterfaceDefinition interfaceDefinition);
 	
 	void delApiDir(String userName, Integer id);
+	
+	 List<InterfaceDefinition> findByIdIn(List<Integer> ids);
 }

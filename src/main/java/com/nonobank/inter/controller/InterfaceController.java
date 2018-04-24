@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.nonobank.inter.component.sync.SyncContext;
@@ -18,6 +20,9 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 
@@ -38,20 +43,12 @@ import com.nonobank.inter.component.result.ResultUtil;
 import com.nonobank.inter.entity.InterfaceDefinition;
 import com.nonobank.inter.entity.InterfaceDefinitionFront;
 import com.nonobank.inter.service.InterfaceDefinitionService;
+import com.nonobank.inter.util.UserUtil;
 
 @Controller
 @RequestMapping(value = "api")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class InterfaceController {
-
-
-
-
-
-
-
-
-
 	
 	public static Logger logger = LoggerFactory.getLogger(InterfaceController.class);
 	
@@ -68,9 +65,10 @@ public class InterfaceController {
 	 */
 	@PostMapping(value="addApiDir")
 	@ResponseBody
-	public Result addDir(@CookieValue(value="nonousername",required=false) String userName, @RequestBody InterfaceDefinitionFront interfaceDefinitionFront){
+	public Result addDir(@RequestBody InterfaceDefinitionFront interfaceDefinitionFront){
 		logger.info("开始新增接口目录");
 		
+		String userName = UserUtil.getUser();
 		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
 		interfaceDefinition.setType(false);
 		interfaceDefinition.setOptstatus((short)0);
@@ -88,7 +86,7 @@ public class InterfaceController {
 	 */
 	@PostMapping(value="addApi")
 	@ResponseBody
-	public Result addApi(@CookieValue(value="nonousername",required=false) String userName, @RequestBody @Valid InterfaceDefinitionFront interfaceDefinitionFront, BindingResult bindingResult){
+	public Result addApi(@RequestBody @Valid InterfaceDefinitionFront interfaceDefinitionFront, BindingResult bindingResult){
 		logger.info("开始新增接口");
 		
 		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
@@ -100,7 +98,7 @@ public class InterfaceController {
 		}else{
 			interfaceDefinition.setOptstatus((short)0);
 			interfaceDefinition.setType(true);
-			interfaceDefinition.setCreatedBy(userName);
+			interfaceDefinition.setCreatedBy(UserUtil.getUser());
 			interfaceDefinition.setCreatedTime(LocalDateTime.now());
 			InterfaceDefinition api = interfaceDefinitionService.add(interfaceDefinition);
 			logger.info("开始新增接口成功，接口ID：", api.getId());
@@ -117,7 +115,7 @@ public class InterfaceController {
 	 */
 	@PostMapping(value="updateApi")
 	@ResponseBody
-	public Result updateApi(@CookieValue(value="nonousername",required=false) String userName, @RequestBody @Valid InterfaceDefinitionFront interfaceDefinitionFront, BindingResult bindingResult){
+	public Result updateApi( @RequestBody @Valid InterfaceDefinitionFront interfaceDefinitionFront, BindingResult bindingResult){
 		logger.info("开始修改api信息");
 		
 		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
@@ -134,13 +132,37 @@ public class InterfaceController {
 				logger.info("修改api信息成功");
 				InterfaceDefinition updatedApi = updatedOptApi.get();
 				updatedApi.setUpdatedTime(LocalDateTime.now());
-				updatedApi.setUpdatedBy(userName);
+				updatedApi.setUpdatedBy(UserUtil.getUser());
 				return ResultUtil.success(updatedApi);
 			}else{
 				logger.error("更新api失败");
 				return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(), "要更新的记录不存在");
 			}
 		}
+	}
+	
+	@PostMapping(value="updateApiDir")
+	@ResponseBody
+	public Result updateApiDir(@RequestBody InterfaceDefinitionFront interfaceDefinitionFront){
+		logger.info("开始更新接口目录：{}", interfaceDefinitionFront.getName());
+		
+		if(interfaceDefinitionFront.getId() == null){
+			return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(), "要更新的记录不存在");
+		}
+		
+//		InterfaceDefinition interfaceDefinition = new InterfaceDefinition();
+//		interfaceDefinition.setId(interfaceDefinitionFront.getId());
+//		interfaceDefinition.setName(interfaceDefinitionFront.getName());
+//		interfaceDefinition.setDescription(interfaceDefinitionFront.getDescription());
+//		interfaceDefinition.setUpdatedBy(UserUtil.getUser());
+//		interfaceDefinition.setUpdatedTime(LocalDateTime.now());
+//		interfaceDefinition.setpId(interfaceDefinitionFront.getpId());
+//		interfaceDefinition.setOptstatus((short)0);
+		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
+		interfaceDefinition.setUpdatedBy(UserUtil.getUser());
+		interfaceDefinition.setUpdatedTime(LocalDateTime.now());
+		interfaceDefinition = interfaceDefinitionService.update(interfaceDefinition);
+		return ResultUtil.success();
 	}
 	
 	/**
@@ -151,14 +173,14 @@ public class InterfaceController {
 	 */
 	@GetMapping(value="delApi")
 	@ResponseBody
-	public Result delApi(@CookieValue(value="nonousername",required=false) String userName, @RequestParam(required=true) Integer id){
+	public Result delApi( @RequestParam(required=true) Integer id){
 		logger.info("开始删除api，id：{}", id);
 		
 		InterfaceDefinition api = interfaceDefinitionService.findById(id);
 		
 		if(null != api){
 			api.setOptstatus((short)2);
-			api.setUpdatedBy(userName);
+			api.setUpdatedBy(UserUtil.getUser());
 			interfaceDefinitionService.update(api);
 			logger.info("删除api成功，id:{}", id);
 		}else{
@@ -177,9 +199,9 @@ public class InterfaceController {
 	 */
 	@GetMapping(value="delApiDir")
 	@ResponseBody
-	public Result delApiDir(@CookieValue(value="nonousername",required=false) String userName, @RequestParam(required=true) Integer id){
+	public Result delApiDir(@RequestParam(required=true) Integer id){
 		logger.info("开始删除apiDir，id：{}", id);
-		interfaceDefinitionService.delApiDir(userName, id);
+		interfaceDefinitionService.delApiDir(UserUtil.getUser(), id);
 		logger.info("开始删除apiDir成功，id：{}", id);
 		return ResultUtil.success();
 	}
@@ -227,9 +249,9 @@ public class InterfaceController {
 	
 	@GetMapping(value="getLastApis")
 	@ResponseBody
-	public Result getLastApi(@RequestParam String system, @RequestParam String module, @RequestParam String urlAddress){
+	public Result getLastApi(@RequestParam String system, @RequestParam String module, @RequestParam String urlAddress, @RequestParam String branch){
 		logger.info("根据id获取相同api");
-		InterfaceDefinition api = interfaceDefinitionService.findBySystemAndModuleAndUrlAddress(system, module, urlAddress);
+		InterfaceDefinition api = interfaceDefinitionService.findBySystemAndModuleAndUrlAddress(system, module, urlAddress, branch);
 		return ResultUtil.success(api);
 	}
 
@@ -278,7 +300,14 @@ public class InterfaceController {
 		}
 		gitService.syncBranch(gitSyncEntity.getSystem(),gitSyncEntity.getAlias(),gitSyncEntity.getGitAddress(),gitSyncEntity.getBranch(),gitSyncEntity.getVersionCode());
 		return ResultUtil.success();
-
+	}
+	
+	@PostMapping(value="findByIds")
+	@ResponseBody
+	public Result findByIds(@RequestBody List<Integer> ids){
+		logger.info("开始查找接口");
+		List<InterfaceDefinition> apis = interfaceDefinitionService.findByIdIn(ids);
+		return ResultUtil.success(apis);
 	}
 	
 }

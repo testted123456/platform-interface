@@ -67,8 +67,13 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 	}
 
 	@Override
-	public InterfaceDefinition findBySystemAndModuleAndUrlAddress(String system, String module, String urlAddress) {
-		return interfaceDefinitionRepository.findBySystemAndModuleAndUrlAddressAndOptstatus(system, module, urlAddress, (short)0);
+	public InterfaceDefinition findBySystemAndModuleAndUrlAddress(String system, String module, String urlAddress, String branch) {
+		return interfaceDefinitionRepository.findBySystemAndModuleAndUrlAddressAndBranchAndOptstatus(system, module, urlAddress, branch, (short)0);
+	}
+
+	@Override
+	public List<InterfaceDefinition> findByIdIn(List<Integer> ids) {
+		return interfaceDefinitionRepository.findByIdIn(ids);
 	}
 	
 }
