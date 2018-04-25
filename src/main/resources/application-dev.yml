@@ -1,5 +1,5 @@
 server:
- port: 8082
+ port: 9090
  context-path: /inter
 httpServer:
   caseServer: http://192.168.32.138:8083/case/
@@ -31,4 +31,4 @@ apidocPath: apidocs
 
 ignore:
   urlPath:
-  ip: 192.168.32.138,192.168.33.81
+  ip: 192.168.1.43,192.168.1.44,192.168.1.47,192.168.1.49
