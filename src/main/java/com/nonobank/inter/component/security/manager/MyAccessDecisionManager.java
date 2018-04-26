@@ -1,9 +1,9 @@
 package com.nonobank.inter.component.security.manager;
 
-import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -17,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
 import com.nonobank.inter.component.remoteEntity.RemoteUser;
+import com.nonobank.inter.repository.RoleUrlPathRepository;
 import com.nonobank.inter.util.IpAdrressUtil;
 
 @Component
@@ -39,15 +40,18 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
     @Autowired
     RemoteUser remoteUser;
     
+    @Autowired
+    RoleUrlPathRepository roleUrlPathRepository;
+    
     @EventListener(ApplicationReadyEvent.class)
     public void initUrlMap() {
-        try {
-            urlMap = remoteUser.getUrlMap();
-            if (urlMap == null || urlMap.keySet().size() == 0) {
-            }
-        } catch (IOException | HttpException ex) {
-            ex.printStackTrace();
-        }
+    	List<Object[]> list = roleUrlPathRepository.findUrlAndRole();
+    	
+    	urlMap = new HashMap<>();
+    	
+    	list.forEach(x->{
+    		urlMap.put(String.valueOf(x[0]), String.valueOf(x[1]));
+    	});
     }
 
     public boolean checkIgnore(String value, String ignoreConf) {
