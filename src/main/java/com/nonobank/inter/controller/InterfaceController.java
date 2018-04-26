@@ -20,6 +20,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationHome;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.http.SessionRepositoryFilter;
@@ -57,6 +59,7 @@ public class InterfaceController {
 
 	@Autowired
 	private GitService gitService;
+
 	
 	/**
 	 * 新增api目录节点
@@ -108,7 +111,7 @@ public class InterfaceController {
 	
 	/**
 	 * 更新api
-	 * @param userName
+	 * @param
 	 * @param interfaceDefinitionFront
 	 * @param bindingResult
 	 * @return
@@ -167,7 +170,7 @@ public class InterfaceController {
 	
 	/**
 	 * 删除api
-	 * @param userName
+	 * @param
 	 * @param id
 	 * @return
 	 */
@@ -193,7 +196,7 @@ public class InterfaceController {
 	
 	/**
 	 * 删除apiDir
-	 * @param userName
+	 * @param
 	 * @param id
 	 * @return
 	 */
@@ -309,5 +312,12 @@ public class InterfaceController {
 		List<InterfaceDefinition> apis = interfaceDefinitionService.findByIdIn(ids);
 		return ResultUtil.success(apis);
 	}
-	
+
+
+	@GetMapping(value = "getPath")
+	@ResponseBody
+	public String getPath() throws GitAPIException {
+		ApplicationHome home = new ApplicationHome(this.getClass());
+		return home.getDir().getPath();
+	}
 }
