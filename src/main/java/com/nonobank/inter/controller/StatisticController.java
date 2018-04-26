@@ -40,5 +40,29 @@ public class StatisticController {
 		Map<String, List<?>> map =apiStatistics.statisApiGroupByModule(system);
 		return ResultUtil.success(map);
 	}
+	
+	@GetMapping(value="statisApiByModuleAndBranch")
+	@ResponseBody
+	public Result statisApiByModuleAndBranch(@RequestParam String system, @RequestParam String module){
+		logger.info("开始统计分支接口数...");
+		Map<String, List<?>> map =apiStatistics.ApiStatisGroupBySystemAndModule(system, module);
+		return ResultUtil.success(map);
+	}
+	
+	@GetMapping(value="statisGroupBySystemRef")
+	@ResponseBody
+	public Result statisGroupBySystemRef(){
+		logger.info("开始统计分支被引用数...");
+		Map<String, List<?>> map =apiStatistics.ApiStatisGroupBySystemRef();
+		return ResultUtil.success(map);
+	}
+	
+	@GetMapping(value="statisGroupBySystemAndModuleRef")
+	@ResponseBody
+	public Result statisGroupBySystemAndModuleRef(@RequestParam String system){
+		logger.info("开始统计分支被引用数...");
+		Map<String, List<?>> map =apiStatistics.ApiStatisGroupBySystemAndModuleRef(system);
+		return ResultUtil.success(map);
+	}
 
 }

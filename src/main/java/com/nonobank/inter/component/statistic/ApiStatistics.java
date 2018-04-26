@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.nonobank.inter.repository.InterfaceDefinitionRepository;
@@ -34,6 +33,49 @@ public class ApiStatistics {
 		return map;
 	}
 	
+	public Map<String, List<?>> statisApiRef(List<Object []> statis){
+		List<Object> data = new ArrayList<>();
+		List<Object> refs = new ArrayList<>();
+		List<Object> unRefs = new ArrayList<>();
+		
+		Map<Object, List<Object[]>> map =
+		statis.stream().collect(Collectors.groupingBy(x->{
+			return x[0];
+		}));
+		
+		map.forEach((k,v)->{
+			if(null == k){
+				data.add("未知");
+			}else{
+				data.add(k);
+			}
+			
+			if(v.size() == 1){
+				if(v.get(0).toString().equals("0")){
+					unRefs.add(v.get(0)[1]);
+					refs.add("0");
+				}else{
+					refs.add(v.get(0)[1]);
+					unRefs.add("0");
+				}
+			}else{
+				if(v.get(0).toString().equals("0")){
+					unRefs.add(v.get(0)[1]);
+					refs.add(v.get(1)[1]);
+				}else{
+					refs.add(v.get(0)[1]);
+					unRefs.add((v.get(0)[1]));
+				}
+			}
+		});
+		
+		Map<String, List<?>> result = new HashMap<>();
+		result.put("data", data);
+		result.put("refs", refs);
+		result.put("unRefs", unRefs);
+		return result;
+	}
+	
 	public Map<String, List<?>> statisApiGroupBySystem(){
 		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupBySys();
 		return statisApi(statis);
@@ -44,20 +86,18 @@ public class ApiStatistics {
 		return statisApi(statis);
 	}
 	
-	public Map<String, List<?>> ApiStatisGroupByModuleAndBranch(String system){
-		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupByModuleAndBranch(system);
-
-		statis.forEach(x->{
-			String module = String.valueOf(x[0]);
-			String branch = String.valueOf(x[1]);
-			Integer count = Integer.valueOf(x[3].toString());
-		});
-		
-		List<Object> branches =
-		statis.stream().map(x->{return x[1];}).distinct().collect(Collectors.toList());
-		
-		Map<Object, Map<Object, List<Object[]>>> map =
-		statis.stream().collect(Collectors.groupingBy(obj->{return obj[0];},Collectors.groupingBy(obj->{return obj[0];})));
-		return null;
+	public Map<String, List<?>> ApiStatisGroupBySystemAndModule(String system, String module){
+		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupBySystemAndModule(system, module);
+		return statisApi(statis);
+	}
+	
+	public Map<String, List<?>> ApiStatisGroupBySystemRef(){
+		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupBySystemRef();
+		return statisApiRef(statis);
+	}
+	
+	public Map<String, List<?>> ApiStatisGroupBySystemAndModuleRef(String system){
+		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupBySystemAndModuleRef(system);
+		return statisApiRef(statis);
 	}
 }

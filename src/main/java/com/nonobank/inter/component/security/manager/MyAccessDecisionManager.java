@@ -1,14 +1,9 @@
 package com.nonobank.inter.component.security.manager;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.nonobank.inter.entity.RoleUrlPath;
-import com.nonobank.inter.repository.RoleUrlPathRepository;
-import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -22,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
 import com.nonobank.inter.component.remoteEntity.RemoteUser;
+import com.nonobank.inter.repository.RoleUrlPathRepository;
 import com.nonobank.inter.util.IpAdrressUtil;
 
 @Component
@@ -35,9 +31,6 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 
     private static final String ROLE_ADMIN = "Admin";
 
-    private static final String SYSTEM = "inter";
-
-
     @Value("${ignore.urlPath}")
     String urlPathIgnore;
 
@@ -46,22 +39,19 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
     
     @Autowired
     RemoteUser remoteUser;
-
-
-
+    
     @Autowired
     RoleUrlPathRepository roleUrlPathRepository;
     
     @EventListener(ApplicationReadyEvent.class)
     public void initUrlMap() {
-        List<RoleUrlPath> roleUrlPaths = roleUrlPathRepository.findBySystemEqualsAndOptstatusNot(SYSTEM, (short) 2);
-        if (roleUrlPaths == null || roleUrlPaths.size() == 0) {
-            return ;
-        }
-        urlMap = new HashMap<>();
-        roleUrlPaths.forEach(roleUrlPath -> {
-            urlMap.put(roleUrlPath.getUrlPath(), roleUrlPath.getRoleName());
-        });
+    	List<Object[]> list = roleUrlPathRepository.findUrlAndRole();
+    	
+    	urlMap = new HashMap<>();
+    	
+    	list.forEach(x->{
+    		urlMap.put(String.valueOf(x[0]), String.valueOf(x[1]));
+    	});
     }
 
     public boolean checkIgnore(String value, String ignoreConf) {
@@ -117,12 +107,12 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 
 //    匿名用户即为非法访问
       if (isAnonymous(authentication)) {
-//          return ;
           throw new AccessDeniedException(NO_LOGIN);
       }
 
 //    获取urlmap
       if (urlMap == null || urlMap.keySet().size() == 0) {
+//          throw new AccessDeniedException("");
     	  return;
       }
 

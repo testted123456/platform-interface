@@ -30,6 +30,20 @@ public interface InterfaceDefinitionRepository extends JpaRepository<InterfaceDe
     @Query(value="select module, count(*) as count from interface_definition  where type=1 and optstatus!=2 and system=:system group by module", nativeQuery = true)
     List<Object[]> ApiStatisGroupByModule(@Param("system") String system);
     
-    @Query(value="select module, branch, count(*) as count from interface_definition  where type=1 and optstatus!=2 and system=:system group by module, branch", nativeQuery = true)
-    List<Object[]> ApiStatisGroupByModuleAndBranch(@Param("system") String system);
+    @Query(value="select branch, count(*) as count from interface_definition  where type=1 and optstatus!=2 and system=:system and module=:module group by branch", nativeQuery = true)
+    List<Object[]> ApiStatisGroupBySystemAndModule(@Param("system") String system, @Param("module") String module);
+    
+    @Query(value="select system, ref, count(*) from (" +
+    		"select system, module, url_address, case when interface_id is null then 0 else 1 end as ref from" + 
+    		"(select id, system, branch, module, url_address from interface_definition where optstatus!=2 and type=1) idf left join" +
+    		"(select distinct interface_id from test_case_interface where optstatus!=2) tci on idf.id=tci.interface_id" +
+    		") t group by system, ref", nativeQuery = true)
+    List<Object[]> ApiStatisGroupBySystemRef();
+    
+    @Query(value="select module, ref, count(*) from (" +
+    		"select module, url_address, case when interface_id is null then 0 else 1 end as ref from" + 
+    		"(select id, branch, module, url_address from interface_definition where optstatus!=2 and type=1 and system=:system) idf left join" +
+    		"(select distinct interface_id from test_case_interface where optstatus!=2) tci on idf.id=tci.interface_id" +
+    		") t group by module, ref", nativeQuery = true)
+    List<Object[]> ApiStatisGroupBySystemAndModuleRef(@Param("system")String system);
 }
