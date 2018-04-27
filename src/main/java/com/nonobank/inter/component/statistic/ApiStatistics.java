@@ -51,20 +51,20 @@ public class ApiStatistics {
 			}
 			
 			if(v.size() == 1){
-				if(v.get(0).toString().equals("0")){
-					unRefs.add(v.get(0)[1]);
+				if(v.get(0)[1].equals("0")){
+					unRefs.add(v.get(0)[2]);
 					refs.add("0");
 				}else{
-					refs.add(v.get(0)[1]);
+					refs.add(v.get(0)[2]);
 					unRefs.add("0");
 				}
 			}else{
-				if(v.get(0).toString().equals("0")){
-					unRefs.add(v.get(0)[1]);
-					refs.add(v.get(1)[1]);
+				if(v.get(0)[1].equals("0")){
+					unRefs.add(v.get(0)[2]);
+					refs.add(v.get(1)[2]);
 				}else{
-					refs.add(v.get(0)[1]);
-					unRefs.add((v.get(0)[1]));
+					refs.add(v.get(0)[2]);
+					unRefs.add((v.get(1)[2]));
 				}
 			}
 		});
@@ -77,27 +77,27 @@ public class ApiStatistics {
 	}
 	
 	public Map<String, List<?>> statisApiGroupBySystem(){
-		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupBySys();
+		List<Object []> statis = interfaceDefinitionRepository.apiStatisGroupBySys();
 		return statisApi(statis);
 	}
 	
 	public Map<String, List<?>> statisApiGroupByModule(String system){
-		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupByModule(system);
+		List<Object []> statis = interfaceDefinitionRepository.apiStatisGroupByModule(system);
 		return statisApi(statis);
 	}
 	
 	public Map<String, List<?>> ApiStatisGroupBySystemAndModule(String system, String module){
-		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupBySystemAndModule(system, module);
+		List<Object []> statis = interfaceDefinitionRepository.apiStatisGroupBySystemAndModule(system, module);
 		return statisApi(statis);
 	}
 	
 	public Map<String, List<?>> ApiStatisGroupBySystemRef(){
-		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupBySystemRef();
+		List<Object []> statis = interfaceDefinitionRepository.apiStatisGroupBySystemRef();
 		return statisApiRef(statis);
 	}
 	
 	public Map<String, List<?>> ApiStatisGroupBySystemAndModuleRef(String system){
-		List<Object []> statis = interfaceDefinitionRepository.ApiStatisGroupBySystemAndModuleRef(system);
+		List<Object []> statis = interfaceDefinitionRepository.apiStatisGroupBySystemAndModuleRef(system);
 		return statisApiRef(statis);
 	}
 }
