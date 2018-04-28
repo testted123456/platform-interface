@@ -15,6 +15,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationHome;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -50,6 +51,7 @@ public class InterfaceController {
 
 	@Autowired
 	private GitService gitService;
+
 	
 	@Autowired
 	MyAccessDecisionManager myAccessDecisionManager;
@@ -115,7 +117,7 @@ public class InterfaceController {
 	
 	/**
 	 * 更新api
-	 * @param userName
+	 * @param
 	 * @param interfaceDefinitionFront
 	 * @param bindingResult
 	 * @return
@@ -174,7 +176,7 @@ public class InterfaceController {
 	
 	/**
 	 * 删除api
-	 * @param userName
+	 * @param
 	 * @param id
 	 * @return
 	 */
@@ -200,7 +202,7 @@ public class InterfaceController {
 	
 	/**
 	 * 删除apiDir
-	 * @param userName
+	 * @param
 	 * @param id
 	 * @return
 	 */
@@ -316,5 +318,12 @@ public class InterfaceController {
 		List<InterfaceDefinition> apis = interfaceDefinitionService.findByIdIn(ids);
 		return ResultUtil.success(apis);
 	}
-	
+
+
+	@GetMapping(value = "getPath")
+	@ResponseBody
+	public String getPath() throws GitAPIException {
+		ApplicationHome home = new ApplicationHome(this.getClass());
+		return home.getDir().getPath();
+	}
 }
