@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.nonobank.inter.component.result.Result;
 import com.nonobank.inter.component.result.ResultUtil;
 import com.nonobank.inter.component.statistic.ApiStatistics;
+import com.nonobank.inter.component.statistic.CaseStatistics;
 
 @Controller
 @RequestMapping(value = "statis")
@@ -24,6 +25,9 @@ public class StatisticController {
 
 	@Autowired
 	ApiStatistics apiStatistics;
+	
+	@Autowired
+	CaseStatistics caseStatistics;
 	
 	@GetMapping(value="statisApiBySys")
 	@ResponseBody
@@ -62,6 +66,22 @@ public class StatisticController {
 	public Result statisGroupBySystemAndModuleRef(@RequestParam String system){
 		logger.info("开始统计分支被引用数...");
 		Map<String, List<?>> map =apiStatistics.ApiStatisGroupBySystemAndModuleRef(system);
+		return ResultUtil.success(map);
+	}
+	
+	@GetMapping(value="caseStatisGroupBySystem")
+	@ResponseBody
+	public Result caseStatisGroupBySystem(){
+		logger.info("开始统计用例被数...");
+		Map<String, List<?>> map = caseStatistics.caseStatisGroupBySystem();
+		return ResultUtil.success(map);
+	}
+	
+	@GetMapping(value="caseStatisGroupByRef")
+	@ResponseBody
+	public Result caseStatisGroupByRef(){
+		logger.info("开始统计用例被被引用数...");
+		Map<String, List<?>> map = caseStatistics.caseStatisGroupByRef();
 		return ResultUtil.success(map);
 	}
 
