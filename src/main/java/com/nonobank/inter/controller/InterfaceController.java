@@ -3,32 +3,21 @@ package com.nonobank.inter.controller;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.nonobank.inter.component.sync.SyncContext;
-import com.nonobank.inter.entity.GitRequestEntity;
-import com.nonobank.inter.service.GitService;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-
 import org.springframework.validation.annotation.Validated;
-
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,8 +29,12 @@ import com.nonobank.inter.component.convert.ApiConvert;
 import com.nonobank.inter.component.result.Result;
 import com.nonobank.inter.component.result.ResultCode;
 import com.nonobank.inter.component.result.ResultUtil;
+import com.nonobank.inter.component.security.manager.MyAccessDecisionManager;
+import com.nonobank.inter.component.sync.SyncContext;
+import com.nonobank.inter.entity.GitRequestEntity;
 import com.nonobank.inter.entity.InterfaceDefinition;
 import com.nonobank.inter.entity.InterfaceDefinitionFront;
+import com.nonobank.inter.service.GitService;
 import com.nonobank.inter.service.InterfaceDefinitionService;
 import com.nonobank.inter.util.UserUtil;
 
@@ -57,6 +50,20 @@ public class InterfaceController {
 
 	@Autowired
 	private GitService gitService;
+	
+	@Autowired
+	MyAccessDecisionManager myAccessDecisionManager;
+	
+	/**
+	 * reload url权限
+	 * @return
+	 */
+	@GetMapping(value="initUrlRole")
+	@ResponseBody
+	public Result initUrlRole(){
+		myAccessDecisionManager.initUrlMap();
+		return ResultUtil.success();
+	}
 	
 	/**
 	 * 新增api目录节点
