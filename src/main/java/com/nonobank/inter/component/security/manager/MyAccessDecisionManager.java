@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -24,7 +25,7 @@ import com.nonobank.inter.util.IpAdrressUtil;
 public class MyAccessDecisionManager implements AccessDecisionManager {
 
     private static Map<String, String> urlMap;
-    
+
     public static final String NO_LOGIN = "no login";
 
     private static final String ANONYMOUS_USER = "anonymousUser";
@@ -36,22 +37,22 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 
     @Value("${ignore.ip}")
     String ipIgnore;
-    
+
     @Autowired
     RemoteUser remoteUser;
-    
+
     @Autowired
     RoleUrlPathRepository roleUrlPathRepository;
-    
+
     @EventListener(ApplicationReadyEvent.class)
     public void initUrlMap() {
-    	List<Object[]> list = roleUrlPathRepository.findUrlAndRole();
-    	
-    	urlMap = new HashMap<>();
-    	
-    	list.forEach(x->{
-    		urlMap.put(String.valueOf(x[0]), String.valueOf(x[1]));
-    	});
+        List<Object[]> list = roleUrlPathRepository.findUrlAndRole();
+
+        urlMap = new HashMap<>();
+
+        list.forEach(x -> {
+            urlMap.put(String.valueOf(x[0]), String.valueOf(x[1]));
+        });
     }
 
     public boolean checkIgnore(String value, String ignoreConf) {
@@ -66,7 +67,7 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
         }
         return false;
     }
-    
+
     /**
      * 判断是否匿名用户
      *
@@ -85,50 +86,53 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
     public void decide(Authentication authentication, Object object,
                        Collection<ConfigAttribute> configAttributes)
             throws AccessDeniedException, InsufficientAuthenticationException {
-    	
-    	if(((FilterInvocation) object).getRequest().getMethod().equals("OPTIONS")){
-        	return;
+
+        if (((FilterInvocation) object).getRequest().getMethod().equals("OPTIONS")) {
+            return;
         }
-    	
+
 //      判断ip是否需要忽略
-      String ip = IpAdrressUtil.getIpAdrress(((FilterInvocation) object).getRequest());
-      if (checkIgnore(ip, ipIgnore)) {
-          return;
-      }
+        String ip = IpAdrressUtil.getIpAdrress(((FilterInvocation) object).getRequest());
+        if (checkIgnore(ip, ipIgnore)) {
+            return;
+        }
 
 //      判断url是否需要忽略
-      String url = ((FilterInvocation) object).getRequestUrl();
-      if (url.indexOf("?") != -1) {
-          url = url.substring(0, url.indexOf("?"));
-      }
-      if (checkIgnore(url, urlPathIgnore)) {
-          return;
-      }
+        String url = ((FilterInvocation) object).getRequestUrl();
+        if (url.indexOf("?") != -1) {
+            url = url.substring(0, url.indexOf("?"));
+        }
+        if (checkIgnore(url, urlPathIgnore)) {
+            return;
+        }
 
 //    匿名用户即为非法访问
-      if (isAnonymous(authentication)) {
-          throw new AccessDeniedException(NO_LOGIN);
-      }
+        if (isAnonymous(authentication)) {
+            if (url.startsWith("apidocs")) {
+                return;
+            }
+            throw new AccessDeniedException(NO_LOGIN);
+        }
 
 //    获取urlmap
-      if (urlMap == null || urlMap.keySet().size() == 0) {
+        if (urlMap == null || urlMap.keySet().size() == 0) {
 //          throw new AccessDeniedException("");
-    	  return;
-      }
+            return;
+        }
 
 //      判断是否有相应的角色
-      String needRole = (String) urlMap.get(url);
-      
-      if(null == needRole){
-        	return;
-      }
-      
-      for (GrantedAuthority ga : authentication.getAuthorities()) {
-          if (ga.getAuthority().equals(ROLE_ADMIN) || needRole.trim().equals(ga.getAuthority().trim())) {
-              return;
-          }
-      }
-      
+        String needRole = (String) urlMap.get(url);
+
+        if (null == needRole) {
+            return;
+        }
+
+        for (GrantedAuthority ga : authentication.getAuthorities()) {
+            if (ga.getAuthority().equals(ROLE_ADMIN) || needRole.trim().equals(ga.getAuthority().trim())) {
+                return;
+            }
+        }
+
 
         if (configAttributes == null) {
             return;
