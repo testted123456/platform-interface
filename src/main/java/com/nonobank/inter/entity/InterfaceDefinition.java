@@ -48,7 +48,7 @@ public class InterfaceDefinition {
 	@Column(columnDefinition="char(1) COMMENT '0:Text;1:Text(text/plain);2:Json(application/json);3:Javascript(application/javascript);4:XML(application/xml);5:XML(text/xml);6:HTML(text/html)'")
 	Character requestBodyRowType;
 	
-	@Column(columnDefinition=" varchar(2048)")
+	@Column(columnDefinition=" text")
 	String requestBody;
 	
 	@Column(columnDefinition=" varchar(255)")
@@ -57,7 +57,7 @@ public class InterfaceDefinition {
 	@Column(columnDefinition="char(1) COMMENT '0:josn;1:text;2:html;3:xml'")
 	Character responseBodyType;
 	
-	@Column(columnDefinition=" varchar(2048)")
+	@Column(columnDefinition=" text")
 	String responseBody;
 	
 	String createdBy;
