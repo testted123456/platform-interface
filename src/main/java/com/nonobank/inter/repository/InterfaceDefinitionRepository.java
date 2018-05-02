@@ -50,9 +50,17 @@ public interface InterfaceDefinitionRepository extends JpaRepository<InterfaceDe
     @Query(value="select system, count(*) from test_case where optstatus!=2  and type=1 group by system", nativeQuery = true)
     List<Object[]> caseStatisGroupBySystem();
     
-    @Query(value="select cases from test_group where optstatus!=2 and type=1 and cases is not null", nativeQuery = true)
-    List<Object> caseStatisGroupByRef();
+
+
+    @Query(value="select id, name, cases from test_group where optstatus!=2 and type=1 and cases is not null", nativeQuery = true)
+    List<Object[]> caseStatisGroupByRef();
     
     @Query(value="select count(1) from test_case where optstatus!=2 and type=1", nativeQuery = true)
     List<Object> caseStatisTotalCount();
+    
+    @Query(value="select t.name, rd.result from " +
+    	"(select tg.name, max(rh.id) as historyId from test_group tg inner join result_history rh on tg.id=rh.group_id " + 
+    	"group by tg.name)t inner join result_detail rd on t.historyId=history_id", nativeQuery = true)
+    List<Object[]> groupStatisSuccessRate();
+
 }

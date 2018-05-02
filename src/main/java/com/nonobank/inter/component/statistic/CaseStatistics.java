@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSONArray;
@@ -16,7 +18,7 @@ public class CaseStatistics {
 	@Autowired
 	InterfaceDefinitionRepository interfaceDefinitionRepository;
 	
-public Map<String, List<?>> statisCase(List<Object []> statis){
+	public Map<String, List<?>> statisCase(List<Object []> statis){
 		
 		List<String> data = new ArrayList<>();
 		List<Integer> series = new ArrayList<>();
@@ -34,19 +36,26 @@ public Map<String, List<?>> statisCase(List<Object []> statis){
 		return map;
 	}
 	
+	/**
+	 * 统计每个系统的用例数
+	 * @return
+	 */
 	public Map<String, List<?>> caseStatisGroupBySystem(){
 		List<Object []> statis = interfaceDefinitionRepository.caseStatisGroupBySystem();
 		return statisCase(statis);
 	}
 	
+	/**
+	 * 统计被group引用、未被引用的用例数
+	 * @return
+	 */
 	public Map<String, List<?>> caseStatisGroupByRef(){
-		List<Object> statis = interfaceDefinitionRepository.caseStatisGroupByRef();
+		List<Object[]> statis = interfaceDefinitionRepository.caseStatisGroupByRef();
 		Map<Integer, Integer> map = new HashMap<>();
 		
 		statis.forEach(x->{
-//			Object obj = x[0];
-			String str = String.valueOf(x);
-			System.out.println(str);
+			Object obj = x[2];
+			String str = String.valueOf(obj);
 			JSONArray jsonArr = JSONArray.parseArray(str);
 			jsonArr.forEach(y->{
 				if(y instanceof JSONObject){
@@ -75,7 +84,42 @@ public Map<String, List<?>> statisCase(List<Object []> statis){
 		data.add("0次");
 		series.add(Integer.valueOf(totalCaseCount)-totalRefCases);
 		
-		Map<String, Integer> statisMap = new HashMap<String, Integer>();
+		Map<String, Integer> statisMap = 
+				new HashMap<String, Integer>();
+	
+				/**
+		new TreeMap<>(new Comparator<String>() {
+
+			@Override
+			public int compare(String o1, String o2) {
+				String pattern = "(\\d+)\\D";
+				Pattern p = Pattern.compile(pattern);
+				Matcher m = p.matcher(o1);
+				
+				int i1 = 0;
+				if(m.find()){
+					String s1 = m.group(1);
+					i1 = Integer.parseInt(s1);
+				}
+				
+				m = p.matcher(o1);
+				
+				int i2 = 0;
+				if(m.find()){
+					String s2 = m.group(1);
+					i2 = Integer.parseInt(s2);
+				}	
+				
+				if(i1>i2){
+					return 1;
+				}else if(i1<i2){
+					return -1;
+				}else{
+					return 0;
+				}
+			}
+		});
+		**/
 		
 		map.forEach((k,v)->{
 			if(statisMap.containsKey(v + "次")){
