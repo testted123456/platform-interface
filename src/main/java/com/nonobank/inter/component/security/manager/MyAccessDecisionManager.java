@@ -108,7 +108,7 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 
 //    匿名用户即为非法访问
         if (isAnonymous(authentication)) {
-            if (url.startsWith("apidocs")) {
+            if (url.startsWith("/apidocs")) {
                 return;
             }
             throw new AccessDeniedException(NO_LOGIN);
