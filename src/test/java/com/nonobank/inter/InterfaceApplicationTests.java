@@ -40,34 +40,34 @@ public class InterfaceApplicationTests {
 	@Test
 	public void contextLoads() throws IOException, GitAPIException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
-//		gitService.syncBranch("acc","http://git.nonobank.com/trd-pay-acc/acc.git","develop","00");
+		gitService.syncBranch("acc","账户","http://git.nonobank.com/trd-pay-acc/acc.git","develop","00");
 
-//		File path = new File(ResourceUtils.getURL("classpath:").getPath());
-//		System.out.println(path.getAbsolutePath());
-//		ApplicationHome home = new ApplicationHome(this.getClass());
-//		File jarFile = home.getSource();
-//		File jarDir = home.getDir();
-//		File uploadDir = new File(jarDir, "upload-dir/aaa");
-//		System.out.println(uploadDir.getPath());
+		File path = new File(ResourceUtils.getURL("classpath:").getPath());
+		System.out.println(path.getAbsolutePath());
+		ApplicationHome home = new ApplicationHome(this.getClass());
+		File jarFile = home.getSource();
+		File jarDir = home.getDir();
+		File uploadDir = new File(jarDir, "upload-dir/aaa");
+		System.out.println(uploadDir.getPath());
+
+		System.out.println(codePath);
+
+	}
+
+//	@Test
+//	public void insertTest(){
+//		InterfaceDefinition interfaceDefinition = new InterfaceDefinition();
+//		interfaceDefinition.setName("aaa");
+//		interfaceDefinition.setApiType('1');
+//		interfaceDefinition.setPostWay('1');
+//		interfaceDefinition.setOptstatus((short)1);
 //
-//		System.out.println(codePath);
-
-	}
-
-	@Test
-	public void insertTest(){
-		InterfaceDefinition interfaceDefinition = new InterfaceDefinition();
-		interfaceDefinition.setName("aaa");
-		interfaceDefinition.setApiType('1');
-		interfaceDefinition.setPostWay('1');
-		interfaceDefinition.setOptstatus((short)1);
-
-//		interfaceDefinition.setCreatedTime(LocalDateTime.now());
-
-		interfaceDefinitionRepository.save(interfaceDefinition);
-
-
-	}
+////		interfaceDefinition.setCreatedTime(LocalDateTime.now());
+//
+//		interfaceDefinitionRepository.save(interfaceDefinition);
+//
+//
+//	}
 
 
 
