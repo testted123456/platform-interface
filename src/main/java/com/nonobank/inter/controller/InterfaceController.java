@@ -326,4 +326,11 @@ public class InterfaceController {
 		ApplicationHome home = new ApplicationHome(this.getClass());
 		return home.getDir().getPath();
 	}
+	
+	@GetMapping(value="checkCode")
+	@ResponseBody
+	public Result checkCode(String system, String branch){
+		gitService.checkCode(system, branch);
+		return ResultUtil.success();
+	}
 }

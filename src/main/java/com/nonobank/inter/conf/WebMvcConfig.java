@@ -24,13 +24,18 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     @Value("${apidocPath}")
     private String apidocPath;
+    
+    @Value("${checkReportPath}")
+    private String checkReportPath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         ApplicationHome home = new ApplicationHome(this.getClass());
         String apidochDirPath = home.getDir().getPath() + "/" + apidocPath + "/";
+        String checkCodeDirPath = home.getDir().getPath() + "/" + checkReportPath + "/";
         registry.addResourceHandler("/apidocs/**").addResourceLocations("file:" + apidochDirPath);
+        registry.addResourceHandler("/checkReport/**").addResourceLocations("file:" + checkCodeDirPath);
 //        registry.addResourceHandler("/apidoc/**").addResourceLocations("file:/Users/tangrubei/projects/nonoPro/interface/apidocs/acc/develop/");
         registry.addResourceHandler("/image/**").addResourceLocations("classpath:/static/");
         super.addResourceHandlers(registry);

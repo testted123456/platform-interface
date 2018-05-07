@@ -5,6 +5,9 @@ import com.nonobank.inter.component.sync.SyncContext;
 import com.nonobank.inter.service.GitService;
 import com.nonobank.inter.util.FileUtil;
 import com.nonobank.inter.util.GitUtil;
+
+import scala.sys.process.processInternal;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -42,10 +45,13 @@ class GitServiceImpl implements GitService {
 
     @Value("${apidocPath}")
     private String apidocPath;
+    
+    @Value("${checkReportPath}")
+    private String checkReportPath;
 
     private String username = "tangrubei";
 
-    private String password = "Pass2018@";
+    private String password = "Pass2019@";
 
     @Autowired
     private IfromAComponent ifromAComponent;
@@ -132,6 +138,32 @@ class GitServiceImpl implements GitService {
         SyncContext.INSTANCE.getMap().remove(system + branch);
 
     }
+
+	@Override
+	@Async
+	public void checkCode(String system, String branch) {
+		// TODO Auto-generated method stub
+        ApplicationHome home = new ApplicationHome(this.getClass());
+        File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
+        File checkReportDir = new File(home.getDir(), String.format("%s/%s/%s", checkReportPath, system, branch));
+		
+        String cmd = "export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home"
+        			+ ";export PATH=$PATH:$JAVA_HOME;" +
+        		"java -jar " + "/Users/ted/Downloads/fireline_1.4.10.jar" + 
+        		" -s=" + branchCodeDir +
+        		" -r=" + checkReportDir;
+        
+        String[] cmds = { "/bin/sh", "-c", cmd };
+        try {
+			Process process = Runtime.getRuntime().exec(cmds);
+//	        System.out.println(process.toString());
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//        return process.toString();
+	}
 
 
 }

@@ -118,7 +118,13 @@ public class GitUtil {
      * @throws IOException
      */
     public static String createApisHtml(String myappPath,String apidocPath) throws IOException {
-        String command = "apidoc -i "+myappPath+" -o "+apidocPath;
+    	File file = new File(apidocPath);
+       
+    	if(!file.exists()){
+        	file.mkdirs();
+        }
+        
+        String command = "/usr/local/bin/apidoc -i "+myappPath+" -o "+apidocPath;
         Process process = Runtime.getRuntime().exec(command);
         return process.toString();
     }

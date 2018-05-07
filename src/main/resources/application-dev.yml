@@ -2,9 +2,9 @@ server:
  port: 8082
  context-path: /inter
 httpServer:
-  caseServer: http://192.168.32.138:8083/case/
+  caseServer: http://127.0.0.1:8083/case/
   user:
-    baseUrl: http://192.168.32.138:8088
+    baseUrl: http://127.0.0.1:8088
     roleUrlpath: /user/getRoleUrlPathBySystem?system=group
     
 spring:
@@ -28,7 +28,8 @@ spring:
 
 codePath: codes
 apidocPath: apidocs
+checkReportPath: checkReport
 
 ignore:
   urlPath:
-  ip: 192.168.1.138
+  ip: 127.0.0.1
