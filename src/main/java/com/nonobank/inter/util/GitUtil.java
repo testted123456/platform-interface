@@ -124,8 +124,10 @@ public class GitUtil {
         	file.mkdirs();
         }
         
-        String command = "/usr/local/bin/apidoc -i "+myappPath+" -o "+apidocPath;
-        Process process = Runtime.getRuntime().exec(command);
+        String command = "export PATH=$PATH:/usr/local/bin/;apidoc -i "+myappPath+" -o "+apidocPath;
+        
+        String[] cmds = { "/bin/sh", "-c", command };
+        Process process = Runtime.getRuntime().exec(cmds);
         return process.toString();
     }
 

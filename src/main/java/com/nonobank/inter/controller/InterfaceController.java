@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
 import com.nonobank.inter.component.convert.ApiConvert;
 import com.nonobank.inter.component.result.Result;
 import com.nonobank.inter.component.result.ResultCode;
@@ -327,10 +329,12 @@ public class InterfaceController {
 		return home.getDir().getPath();
 	}
 	
-	@GetMapping(value="checkCode")
+	@GetMapping(value = "searchApi")
 	@ResponseBody
-	public Result checkCode(String system, String branch){
-		gitService.checkCode(system, branch);
-		return ResultUtil.success();
+	public Result searchApi(@RequestParam String name, @RequestParam String urlAddress, @RequestParam String branch, @RequestParam String module, @RequestParam String system){
+		logger.info("开始过滤接口");
+		List<JSONObject> list = interfaceDefinitionService.serarchApi(name, urlAddress, branch, module, system, true);
+		return ResultUtil.success(list);
 	}
+	
 }

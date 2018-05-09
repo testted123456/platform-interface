@@ -27,6 +27,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     
     @Value("${checkReportPath}")
     private String checkReportPath;
+    
+    @Value("${jacocoReportPath}")
+    private String jacocoReportPath;
+    
+    @Value("${jacocoDumpath}")
+    private String jacocoDumpath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -34,12 +40,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         ApplicationHome home = new ApplicationHome(this.getClass());
         String apidochDirPath = home.getDir().getPath() + "/" + apidocPath + "/";
         String checkCodeDirPath = home.getDir().getPath() + "/" + checkReportPath + "/";
+        String jacocoReportDirPath = home.getDir().getPath() + "/" + jacocoReportPath + "/";
+        String jacocoDumDirPath = home.getDir().getPath() + "/" + jacocoDumpath + "/";
         registry.addResourceHandler("/apidocs/**").addResourceLocations("file:" + apidochDirPath);
         registry.addResourceHandler("/checkReport/**").addResourceLocations("file:" + checkCodeDirPath);
-//        registry.addResourceHandler("/apidoc/**").addResourceLocations("file:/Users/tangrubei/projects/nonoPro/interface/apidocs/acc/develop/");
+        registry.addResourceHandler("/jacocoReport/**").addResourceLocations("file:" + jacocoReportDirPath);
+        registry.addResourceHandler("/jacocoDumpath/**").addResourceLocations("file:" + jacocoDumDirPath);
         registry.addResourceHandler("/image/**").addResourceLocations("classpath:/static/");
         super.addResourceHandlers(registry);
-
-
     }
 }
