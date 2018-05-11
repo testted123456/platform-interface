@@ -17,6 +17,7 @@ public class InterfaceDefinition {
 	@Column(nullable=false, columnDefinition="varchar(300) COMMENT '接口名称'")
 	String name;
 	
+	@Column(nullable=false, columnDefinition="varchar(1000) COMMENT '接口描述'")
 	String description;
 	
 	@Column(nullable=false, columnDefinition="bigint(20) COMMENT '接口父节点'")
