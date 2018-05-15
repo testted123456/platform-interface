@@ -51,6 +51,9 @@ class GitServiceImpl implements GitService {
     
     @Value("${checkReportPath}")
     private String checkReportPath;
+    
+    @Value("${firelineJarPath}")
+    private String firelineJarPath;
 
     private String username = "tangrubei";
 
@@ -167,7 +170,7 @@ class GitServiceImpl implements GitService {
 		
         String cmd = "export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home"
         			+ ";export PATH=$PATH:$JAVA_HOME;" +
-        		"java -jar " + "/Users/ted/Downloads/fireline_1.4.10.jar" + 
+        		"java -jar " + firelineJarPath + 
         		" -s=" + branchCodeDir +
         		" -r=" + checkReportDir;
         
