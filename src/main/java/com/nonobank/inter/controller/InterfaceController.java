@@ -320,7 +320,11 @@ public class InterfaceController {
 	public Result searchApi(@RequestParam String name, @RequestParam String urlAddress, @RequestParam String branch, @RequestParam String module, @RequestParam String system){
 		logger.info("开始过滤接口");
 		List<InterfaceDefinition> list = interfaceDefinitionService.serarchApi(name, urlAddress, branch, module, system, true);
-		return ResultUtil.success(list);
+		List<InterfaceDefinitionFront> idff = new ArrayList<>();
+		list.forEach(x->{
+			idff.add(ApiConvert.convertApi2Front(x));
+		});
+		return ResultUtil.success(idff);
 	}
 	
 }
