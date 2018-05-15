@@ -25,6 +25,6 @@ public interface InterfaceDefinitionService {
 	
 	List<InterfaceDefinition> findByIdIn(List<Integer> ids);
 	 
-	List<JSONObject> serarchApi(String name, String url, String branch, String module, String system, Boolean type);
+	List<InterfaceDefinition> serarchApi(String name, String url, String branch, String module, String system, Boolean type);
 
 }

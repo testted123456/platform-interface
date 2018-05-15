@@ -82,9 +82,11 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 	}
 
 	@Override
-	public List<JSONObject> serarchApi(String name, String urlAddress, String branch, String module, String system, Boolean type) {
+	public List<InterfaceDefinition> serarchApi(String name, String urlAddress, String branch, String module, String system, Boolean type) {
 		List<InterfaceDefinition> apis =  
 				interfaceDefinitionRepository.searchApi(name, urlAddress, branch, module, system);
+		return apis;
+		/*
 		Map<Integer, JSONObject> map = new HashMap<Integer, JSONObject>();
 		
 		apis.stream().forEach(x->{
@@ -147,6 +149,7 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 		});
 		
 		return list;
+		*/
 	}
 	
 }
