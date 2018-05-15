@@ -1,13 +1,11 @@
 package com.nonobank.inter.service.impl;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.nonobank.inter.component.remoteEntity.RemoteTestCase;
+import com.nonobank.inter.component.sync.IfromAComponent;
+import com.nonobank.inter.component.sync.SyncContext;
+import com.nonobank.inter.service.GitService;
+import com.nonobank.inter.util.FileUtil;
+import com.nonobank.inter.util.GitUtil;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -19,19 +17,20 @@ import org.springframework.boot.ApplicationHome;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.nonobank.inter.component.remoteEntity.RemoteTestCase;
-import com.nonobank.inter.component.sync.IfromAComponent;
-import com.nonobank.inter.component.sync.SyncContext;
-import com.nonobank.inter.service.GitService;
-import com.nonobank.inter.util.FileUtil;
-import com.nonobank.inter.util.GitUtil;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by tangrubei on 2018/3/8.
  */
 
 @Service
-class GitServiceImpl implements GitService {
+public class GitServiceImpl implements GitService {
 
 
     private final static String FEATURE_FLAG = "feature";
@@ -48,7 +47,7 @@ class GitServiceImpl implements GitService {
 
     @Value("${apidocPath}")
     private String apidocPath;
-    
+
     @Value("${checkReportPath}")
     private String checkReportPath;
     
@@ -57,16 +56,16 @@ class GitServiceImpl implements GitService {
 
     private String username = "tangrubei";
 
-    private String password = "Pass2019@";
+    private String password = "Pass2018@";
 
     @Autowired
     private IfromAComponent ifromAComponent;
-    
+
     @Autowired
     private RemoteTestCase remoteTestCase;
 
-//    private static Logger log = LogManager.getLogger(GitServiceImpl.class);
-	public static Logger logger = LoggerFactory.getLogger(GitServiceImpl.class);
+    //    private static Logger log = LogManager.getLogger(GitServiceImpl.class);
+    public static Logger logger = LoggerFactory.getLogger(GitServiceImpl.class);
 
 
     /**
@@ -110,86 +109,92 @@ class GitServiceImpl implements GitService {
      */
     @Override
     @Async
-    public void syncBranch(String system, String alias, String gitAddress, String branch, String versionCode) throws GitAPIException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        SyncContext.INSTANCE.getMap().put(system + branch, "running");
-        CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
-        String remoteVersionCode = GitUtil.getGitBranchVersionCode(gitAddress, branch, credentialsProvider);
-        if (versionCode.equals(remoteVersionCode)) {
+    public void syncBranch(String system, String alias, String gitAddress, String branch, String versionCode) {
+
+        try {
+            CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
+            String remoteVersionCode = GitUtil.getGitBranchVersionCode(gitAddress, branch, credentialsProvider);
+            if (versionCode.equals(remoteVersionCode)) {
 //            版本号一直，无需同步，直接返回
-            return;
-        }
+                return;
+            }
 
+            SyncContext.INSTANCE.getMap().put(system + branch, "running");
 
-        ApplicationHome home = new ApplicationHome(this.getClass());
-        File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
-        File apidochDir = new File(home.getDir(), String.format("%s/%s/%s", apidocPath, system, branch));
+            ApplicationHome home = new ApplicationHome(this.getClass());
+            File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
+            File apidochDir = new File(home.getDir(), String.format("%s/%s/%s", apidocPath, system, branch));
 //      删除已存在的代码，并创建文件夹
-        if (branchCodeDir.exists()) {
-            FileUtil.deleteFile(branchCodeDir);
-        } else {
-            branchCodeDir.mkdirs();
+            if (branchCodeDir.exists()) {
+                FileUtil.deleteFile(branchCodeDir);
+            } else {
+                branchCodeDir.mkdirs();
+            }
+            System.out.println("开始克隆代码");
+            GitUtil.cloneCode(gitAddress, branchCodeDir, branch, credentialsProvider);
+            System.out.println("代码克隆结束");
+
+            System.out.println("开始创建apidoc页面");
+            GitUtil.createApisHtml(branchCodeDir.getPath(), apidochDir.getPath());
+            System.out.println("创建apidoc页面结束");
+
+
+            String apidataJsonPath = apidochDir.getPath() + "/api_data.json";
+            String projectJsonPath = apidochDir.getPath() + "/api_project.json";
+
+            String apiDataContent = FileUtil.readFile(apidataJsonPath);
+            String projectContent = FileUtil.readFile(projectJsonPath);
+            ifromAComponent.syncApidoc(alias, branch, projectContent, apiDataContent);
+
+        } catch (GitAPIException | IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } finally {
+            SyncContext.INSTANCE.getMap().remove(system + branch);
+
         }
-        System.out.println("开始克隆代码");
-        GitUtil.cloneCode(gitAddress, branchCodeDir, branch, credentialsProvider);
-        System.out.println("代码克隆结束");
-
-        System.out.println("开始创建apidoc页面");
-        GitUtil.createApisHtml(branchCodeDir.getPath(), apidochDir.getPath());
-        System.out.println("创建apidoc页面结束");
 
 
-        String apidataJsonPath = apidochDir.getPath() + "/api_data.json";
-        String projectJsonPath = apidochDir.getPath() + "/api_project.json";
-
-        String apiDataContent = FileUtil.readFile(apidataJsonPath);
-        String projectContent = FileUtil.readFile(projectJsonPath);
-        ifromAComponent.syncApidoc(alias, branch, projectContent, apiDataContent);
-        SyncContext.INSTANCE.getMap().remove(system + branch);
-        
-        //同步成功后通知
-        remoteTestCase.noticeSyncResult(1, system, branch, remoteVersionCode);
     }
-    
     @Override
     public void cloneCode(String system, String branch, String gitAddress){
-    	 CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
-    	 ApplicationHome home = new ApplicationHome(this.getClass());
-         File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
-         logger.info("开始clone代码，system： {}, branch:{}", system, branch);
-    	 GitUtil.cloneCode(gitAddress, branchCodeDir, branch, credentialsProvider);
-    	 logger.info("clone代码完成，system： {}, branch:{}", system, branch);
+        CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
+        ApplicationHome home = new ApplicationHome(this.getClass());
+        File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
+        logger.info("开始clone代码，system： {}, branch:{}", system, branch);
+        GitUtil.cloneCode(gitAddress, branchCodeDir, branch, credentialsProvider);
+        logger.info("clone代码完成，system： {}, branch:{}", system, branch);
     }
 
-	@Override
-	@Async
-	public void checkCode(String system, String branch) {
-		// TODO Auto-generated method stub
+    @Override
+    @Async
+    public void checkCode(String system, String branch) {
+        // TODO Auto-generated method stub
         ApplicationHome home = new ApplicationHome(this.getClass());
         File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
         File checkReportDir = new File(home.getDir(), String.format("%s/%s/%s", checkReportPath, system, branch));
-		
+
         String cmd = "export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home"
         			+ ";export PATH=$PATH:$JAVA_HOME;" +
         		"java -jar " + firelineJarPath + 
         		" -s=" + branchCodeDir +
         		" -r=" + checkReportDir;
-        
+
         String[] cmds = { "/bin/sh", "-c", cmd };
         try {
-			Process process = Runtime.getRuntime().exec(cmds);
+            Process process = Runtime.getRuntime().exec(cmds);
 //	        System.out.println(process.toString());
-			BufferedReader rd = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String line;
-			while ((line = rd.readLine()) != null) {
-				System.out.println(line);
-			}
+            BufferedReader rd = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                System.out.println(line);
+            }
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 //        return process.toString();
-	}
+    }
 
 
 }
