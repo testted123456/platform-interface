@@ -53,7 +53,7 @@ public class GitServiceImpl implements GitService {
 
     private String username = "tangrubei";
 
-    private String password = "Pass2018@";
+    private String password = "Pass2019@";
 
     @Autowired
     private IfromAComponent ifromAComponent;
