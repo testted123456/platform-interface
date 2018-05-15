@@ -1,5 +1,6 @@
 package com.nonobank.inter.service.impl;
 
+import com.nonobank.inter.component.remoteEntity.RemoteTestCase;
 import com.nonobank.inter.component.sync.IfromAComponent;
 import com.nonobank.inter.component.sync.SyncContext;
 import com.nonobank.inter.service.GitService;
@@ -16,19 +17,20 @@ import org.springframework.boot.ApplicationHome;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.nonobank.inter.component.remoteEntity.RemoteTestCase;
-import com.nonobank.inter.component.sync.IfromAComponent;
-import com.nonobank.inter.component.sync.SyncContext;
-import com.nonobank.inter.service.GitService;
-import com.nonobank.inter.util.FileUtil;
-import com.nonobank.inter.util.GitUtil;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by tangrubei on 2018/3/8.
  */
 
 @Service
-class GitServiceImpl implements GitService {
+public class GitServiceImpl implements GitService {
 
 
     private final static String FEATURE_FLAG = "feature";
@@ -59,8 +61,8 @@ class GitServiceImpl implements GitService {
     @Autowired
     private RemoteTestCase remoteTestCase;
 
-//    private static Logger log = LogManager.getLogger(GitServiceImpl.class);
-	public static Logger logger = LoggerFactory.getLogger(GitServiceImpl.class);
+    //    private static Logger log = LogManager.getLogger(GitServiceImpl.class);
+    public static Logger logger = LoggerFactory.getLogger(GitServiceImpl.class);
 
 
     /**
@@ -149,6 +151,46 @@ class GitServiceImpl implements GitService {
         }
 
 
+    }
+    @Override
+    public void cloneCode(String system, String branch, String gitAddress){
+        CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
+        ApplicationHome home = new ApplicationHome(this.getClass());
+        File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
+        logger.info("开始clone代码，system： {}, branch:{}", system, branch);
+        GitUtil.cloneCode(gitAddress, branchCodeDir, branch, credentialsProvider);
+        logger.info("clone代码完成，system： {}, branch:{}", system, branch);
+    }
+
+    @Override
+    @Async
+    public void checkCode(String system, String branch) {
+        // TODO Auto-generated method stub
+        ApplicationHome home = new ApplicationHome(this.getClass());
+        File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
+        File checkReportDir = new File(home.getDir(), String.format("%s/%s/%s", checkReportPath, system, branch));
+
+        String cmd = "export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home"
+                + ";export PATH=$PATH:$JAVA_HOME;" +
+                "java -jar " + "/Users/ted/Downloads/fireline_1.4.10.jar" +
+                " -s=" + branchCodeDir +
+                " -r=" + checkReportDir;
+
+        String[] cmds = { "/bin/sh", "-c", cmd };
+        try {
+            Process process = Runtime.getRuntime().exec(cmds);
+//	        System.out.println(process.toString());
+            BufferedReader rd = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                System.out.println(line);
+            }
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+//        return process.toString();
     }
 
 
