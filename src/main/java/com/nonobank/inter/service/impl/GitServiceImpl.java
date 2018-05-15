@@ -95,41 +95,50 @@ class GitServiceImpl implements GitService {
      */
     @Override
     @Async
-    public void syncBranch(String system, String alias, String gitAddress, String branch, String versionCode) throws GitAPIException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        SyncContext.INSTANCE.getMap().put(system + branch, "running");
-        CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
-        String remoteVersionCode = GitUtil.getGitBranchVersionCode(gitAddress, branch, credentialsProvider);
-        if (versionCode.equals(remoteVersionCode)) {
+    public void syncBranch(String system, String alias, String gitAddress, String branch, String versionCode) {
+
+        try {
+            CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
+            String remoteVersionCode = GitUtil.getGitBranchVersionCode(gitAddress, branch, credentialsProvider);
+            if (versionCode.equals(remoteVersionCode)) {
 //            版本号一直，无需同步，直接返回
-            return;
-        }
+                return;
+            }
 
+            SyncContext.INSTANCE.getMap().put(system + branch, "running");
 
-        ApplicationHome home = new ApplicationHome(this.getClass());
-        File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
-        File apidochDir = new File(home.getDir(), String.format("%s/%s/%s", apidocPath, system, branch));
+            ApplicationHome home = new ApplicationHome(this.getClass());
+            File branchCodeDir = new File(home.getDir(), String.format("%s/%s/%s", codePath, system, branch));
+            File apidochDir = new File(home.getDir(), String.format("%s/%s/%s", apidocPath, system, branch));
 //      删除已存在的代码，并创建文件夹
-        if (branchCodeDir.exists()) {
-            FileUtil.deleteFile(branchCodeDir);
-        } else {
-            branchCodeDir.mkdirs();
+            if (branchCodeDir.exists()) {
+                FileUtil.deleteFile(branchCodeDir);
+            } else {
+                branchCodeDir.mkdirs();
+            }
+            System.out.println("开始克隆代码");
+            GitUtil.cloneCode(gitAddress, branchCodeDir, branch, credentialsProvider);
+            System.out.println("代码克隆结束");
+
+            System.out.println("开始创建apidoc页面");
+            GitUtil.createApisHtml(branchCodeDir.getPath(), apidochDir.getPath());
+            System.out.println("创建apidoc页面结束");
+
+
+            String apidataJsonPath = apidochDir.getPath() + "/api_data.json";
+            String projectJsonPath = apidochDir.getPath() + "/api_project.json";
+
+            String apiDataContent = FileUtil.readFile(apidataJsonPath);
+            String projectContent = FileUtil.readFile(projectJsonPath);
+            ifromAComponent.syncApidoc(alias, branch, projectContent, apiDataContent);
+
+        } catch (GitAPIException | IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } finally {
+            SyncContext.INSTANCE.getMap().remove(system + branch);
+
         }
-        System.out.println("开始克隆代码");
-        GitUtil.cloneCode(gitAddress, branchCodeDir, branch, credentialsProvider);
-        System.out.println("代码克隆结束");
 
-        System.out.println("开始创建apidoc页面");
-        GitUtil.createApisHtml(branchCodeDir.getPath(), apidochDir.getPath());
-        System.out.println("创建apidoc页面结束");
-
-
-        String apidataJsonPath = apidochDir.getPath() + "/api_data.json";
-        String projectJsonPath = apidochDir.getPath() + "/api_project.json";
-
-        String apiDataContent = FileUtil.readFile(apidataJsonPath);
-        String projectContent = FileUtil.readFile(projectJsonPath);
-        ifromAComponent.syncApidoc(alias, branch, projectContent, apiDataContent);
-        SyncContext.INSTANCE.getMap().remove(system + branch);
 
     }
 
