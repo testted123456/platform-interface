@@ -16,7 +16,7 @@ spring:
   session:
     store-type: redis
   datasource:
-    url: jdbc:mysql://192.168.1.42:3306/testingplatform?useUnicode=true&amp;characterEncoding=utf-8
+    url: jdbc:mysql://192.168.1.42:3306/testingplatform?useUnicode=true&characterEncoding=utf-8
 #    url: jdbc:mysql://127.0.0.1:3306/platform?useUnicode=true&amp;characterEncoding=utf-8
     username: tester
     password: 123456
@@ -28,6 +28,14 @@ spring:
 
 codePath: codes
 apidocPath: apidocs
+checkReportPath: checkReport
+jacocoReportPath: jacocoReport
+
+jacocoDumpath: jacocoDump
+classFilePath: classFile
+mvnPath: /usr/local/src/apache-maven-3.5.3/bin/mvn
+firelineJarPath: /usr/local/lib/fireline_1.4.10.jar
+JAVA_HOME: /usr/bin/java
 
 ignore:
   urlPath:

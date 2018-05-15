@@ -21,6 +21,13 @@ public interface InterfaceDefinitionRepository extends JpaRepository<InterfaceDe
     List<InterfaceDefinition> findByIdIn(List<Integer> ids);
 
     List<InterfaceDefinition> findByIdAndBranchAndOptstatusEquals(Integer id, String branch, short optstatus);
+    
+    List<InterfaceDefinition> findByNameLikeAndUrlAddressLikeAndBranchLikeAndModuleLikeAndSystemLikeAndOptstatusEqualsAndTypeTrue(String name, String urlAddress,
+    		String branch, String module, String system, short optstatus);
+    
+	@Query("select idf from InterfaceDefinition idf where idf.name like %?1% and idf.urlAddress like %?2% and idf.branch like %?3% and idf.module like %?4%"
+			+ " and idf.system like %?5% and idf.type=1 and idf.optstatus!=2")
+    List<InterfaceDefinition> searchApi(String name, String urlAddress, String branch, String module, String system);
 
     InterfaceDefinition findBySystemAndModuleAndUrlAddressAndBranchAndOptstatus(String system, String module, String urlAddress, String branch, short optstatus);
 

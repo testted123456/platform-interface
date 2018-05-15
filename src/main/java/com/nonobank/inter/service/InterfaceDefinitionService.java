@@ -2,6 +2,8 @@ package com.nonobank.inter.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSONObject;
 import com.nonobank.inter.entity.InterfaceDefinition;
 
 @Service
@@ -21,5 +23,8 @@ public interface InterfaceDefinitionService {
 	
 	void delApiDir(String userName, Integer id);
 	
-	 List<InterfaceDefinition> findByIdIn(List<Integer> ids);
+	List<InterfaceDefinition> findByIdIn(List<Integer> ids);
+	 
+	List<InterfaceDefinition> serarchApi(String name, String url, String branch, String module, String system, Boolean type);
+
 }

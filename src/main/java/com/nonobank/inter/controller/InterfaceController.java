@@ -5,12 +5,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-
 import javax.validation.Valid;
-
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import com.alibaba.fastjson.JSONObject;
 import com.nonobank.inter.component.convert.ApiConvert;
 import com.nonobank.inter.component.result.Result;
 import com.nonobank.inter.component.result.ResultCode;
@@ -127,27 +125,17 @@ public class InterfaceController {
 	public Result updateApi( @RequestBody @Valid InterfaceDefinitionFront interfaceDefinitionFront, BindingResult bindingResult){
 		logger.info("开始修改api信息");
 		
-		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
-		
-		if(bindingResult.hasErrors()){
-			String erroMsg = bindingResult.getAllErrors().get(0).getDefaultMessage();
-			logger.error("接口校验失败：{}", erroMsg);
-			return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(), erroMsg);
-		}else{
-			Optional<InterfaceDefinition> optApi = Optional.ofNullable(interfaceDefinitionService.findById(interfaceDefinition.getId()));
-			Optional<InterfaceDefinition> updatedOptApi = optApi.map(a->interfaceDefinitionService.update(a));
-			
-			if(updatedOptApi.isPresent()){
-				logger.info("修改api信息成功");
-				InterfaceDefinition updatedApi = updatedOptApi.get();
-				updatedApi.setUpdatedTime(LocalDateTime.now());
-				updatedApi.setUpdatedBy(UserUtil.getUser());
-				return ResultUtil.success(updatedApi);
-			}else{
-				logger.error("更新api失败");
-				return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(), "要更新的记录不存在");
-			}
+		if(null == interfaceDefinitionFront.getId()){
+			return ResultUtil.error(ResultCode.VALIDATION_ERROR.getCode(), "要更新的接口不存在！");
 		}
+		
+		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
+		String userName = UserUtil.getUser();
+		interfaceDefinition.setUpdatedBy(userName);
+		interfaceDefinition.setUpdatedTime(LocalDateTime.now());
+		interfaceDefinition = interfaceDefinitionService.update(interfaceDefinition);
+		
+		return ResultUtil.success(interfaceDefinition);
 	}
 	
 	@PostMapping(value="updateApiDir")
@@ -326,4 +314,13 @@ public class InterfaceController {
 		ApplicationHome home = new ApplicationHome(this.getClass());
 		return home.getDir().getPath();
 	}
+	
+	@GetMapping(value = "searchApi")
+	@ResponseBody
+	public Result searchApi(@RequestParam String name, @RequestParam String urlAddress, @RequestParam String branch, @RequestParam String module, @RequestParam String system){
+		logger.info("开始过滤接口");
+		List<InterfaceDefinition> list = interfaceDefinitionService.serarchApi(name, urlAddress, branch, module, system, true);
+		return ResultUtil.success(list);
+	}
+	
 }

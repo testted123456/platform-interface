@@ -9,8 +9,11 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.validation.constraints.NotNull;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -118,8 +121,21 @@ public class GitUtil {
      * @throws IOException
      */
     public static String createApisHtml(String myappPath,String apidocPath) throws IOException {
-        String command = "apidoc -i "+myappPath+" -o "+apidocPath;
-        Process process = Runtime.getRuntime().exec(command);
+    	File file = new File(apidocPath);
+       
+    	if(!file.exists()){
+        	file.mkdirs();
+        }
+        
+        String command = "export PATH=$PATH:/usr/local/bin/;apidoc -i "+myappPath+" -o "+apidocPath;
+        
+        String[] cmds = { "/bin/sh", "-c", command };
+        Process process = Runtime.getRuntime().exec(cmds);
+        BufferedReader rd = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String line;
+		while ((line = rd.readLine()) != null) {
+			System.out.println(line);
+		}
         return process.toString();
     }
 
