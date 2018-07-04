@@ -1,25 +1,22 @@
 server:
- port: 8082
+ port: 9100
  context-path: /inter
 httpServer:
-  caseServer: http://127.0.0.1:8083/case/
+  caseServer: http://192.168.1.121:9200/case/
   user:
-    baseUrl: http://127.0.0.1:8088
+    baseUrl: http://192.168.1.122:9090
     roleUrlpath: /user/getRoleUrlPathBySystem?system=group
-    
 spring:
   redis:
-#    host: 192.168.1.46
-    host: 127.0.0.1
+    host: 192.168.1.123
     port: 6379
     timeout: 20000
   session:
     store-type: redis
   datasource:
-#    url: jdbc:mysql://192.168.1.51:3306/platform?useUnicode=true&amp;characterEncoding=utf-8
-    url: jdbc:mysql://127.0.0.1:3306/platform?useUnicode=true&amp;characterEncoding=utf-8
+    url: jdbc:mysql://192.168.1.123:3306/testingplatform?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: 123456
+    password: Imobpay123456!
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     hibernate:
@@ -30,12 +27,13 @@ codePath: codes
 apidocPath: apidocs
 checkReportPath: checkReport
 jacocoReportPath: jacocoReport
+
 jacocoDumpath: jacocoDump
 classFilePath: classFile
-mvnPath: /Users/ted/Documents/software/apache-maven-3.3.9/bin/
-firelineJarPath: /Users/ted/Downloads/fireline_1.4.10.jar
-JAVA_HOME: /Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home
+mvnPath: /usr/local/src/apache-maven-3.5.3/bin/mvn
+firelineJarPath: /usr/local/lib/fireline_1.4.10.jar
+JAVA_HOME: /usr/bin/java
 
 ignore:
   urlPath:
-  ip: 127.0.0.1
+  ip: 192.168.1.120,192.168.1.121,192.168.1.122,192.168.1.123
