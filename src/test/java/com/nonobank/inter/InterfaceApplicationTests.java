@@ -2,24 +2,21 @@ package com.nonobank.inter;
 
 
 
-import com.nonobank.inter.entity.InterfaceDefinition;
-import com.nonobank.inter.repository.InterfaceDefinitionRepository;
-import com.nonobank.inter.service.GitService;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationHome;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDateTime;
+import com.nonobank.inter.component.sync.IfromAComponent;
+import com.nonobank.inter.repository.InterfaceDefinitionRepository;
+import com.nonobank.inter.service.GitService;
+import com.nonobank.inter.util.FileUtil;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -36,11 +33,14 @@ public class InterfaceApplicationTests {
 
 	@Autowired
 	private InterfaceDefinitionRepository interfaceDefinitionRepository;
+	
+	@Autowired
+	IfromAComponent ifromAComponent;
 
 	@Test
 	public void contextLoads() throws IOException, GitAPIException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
-		gitService.syncBranch("acc","账户","http://git.nonobank.com/trd-pay-acc/acc.git","develop","00");
+		/*gitService.syncBranch("acc","账户","http://git.nonobank.com/trd-pay-acc/acc.git","develop","00");
 
 		File path = new File(ResourceUtils.getURL("classpath:").getPath());
 		System.out.println(path.getAbsolutePath());
@@ -50,9 +50,17 @@ public class InterfaceApplicationTests {
 		File uploadDir = new File(jarDir, "upload-dir/aaa");
 		System.out.println(uploadDir.getPath());
 
-		System.out.println(codePath);
+		System.out.println(codePath);*/
+		
+		/*String apidataJsonPath = 
+				"F:\\my_project\\java\\platform-testcase\\src\\main\\java\\com\\nonobank\\testcase\\component\\dataProvider\\common\\apidoc\\api_data.json";
+		String projectJsonPath = 
+				"F:\\my_project\\java\\platform-testcase\\src\\main\\java\\com\\nonobank\\testcase\\component\\dataProvider\\common\\apidoc\\api_project.json";
+		String apiDataContent = FileUtil.readFile(apidataJsonPath);
+        String projectContent = FileUtil.readFile(projectJsonPath);
+        ifromAComponent.syncApidoc("api", "dev", projectContent, apiDataContent);*/
 
-	}
+	} 
 
 //	@Test
 //	public void insertTest(){
@@ -68,7 +76,5 @@ public class InterfaceApplicationTests {
 //
 //
 //	}
-
-
 
 }

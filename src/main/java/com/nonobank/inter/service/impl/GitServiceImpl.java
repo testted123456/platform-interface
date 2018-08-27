@@ -1,8 +1,11 @@
 package com.nonobank.inter.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.nonobank.inter.component.remoteEntity.RemoteTestCase;
 import com.nonobank.inter.component.sync.IfromAComponent;
 import com.nonobank.inter.component.sync.SyncContext;
+import com.nonobank.inter.controller.InterfaceController;
 import com.nonobank.inter.service.GitService;
 import com.nonobank.inter.util.FileUtil;
 import com.nonobank.inter.util.GitUtil;
@@ -31,8 +34,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class GitServiceImpl implements GitService {
-
-
+	
     private final static String FEATURE_FLAG = "feature";
 
     private final static String HOTFIX_FLAG = "hotfix";
@@ -54,9 +56,9 @@ public class GitServiceImpl implements GitService {
     @Value("${firelineJarPath}")
     private String firelineJarPath;
 
-    private String username = "tangrubei";
+    private String username = "yaoyinbing";
 
-    private String password = "Pass2019@";
+    private String password = "Init1234!";
 
     @Autowired
     private IfromAComponent ifromAComponent;
@@ -92,6 +94,7 @@ public class GitServiceImpl implements GitService {
             } else {
                 rename = ref.getName();
             }
+            
             return rename;
         }).collect(Collectors.toList()).stream().filter(s -> !HEAD_FLAG.equals(s)).collect(Collectors.toList());
         return branshs;
@@ -115,7 +118,7 @@ public class GitServiceImpl implements GitService {
             CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);
             String remoteVersionCode = GitUtil.getGitBranchVersionCode(gitAddress, branch, credentialsProvider);
             if (versionCode.equals(remoteVersionCode)) {
-//            版本号一直，无需同步，直接返回
+            	logger.info("版本号一致，无需同步，直接返回");
                 return;
             }
 
@@ -130,21 +133,29 @@ public class GitServiceImpl implements GitService {
             } else {
                 branchCodeDir.mkdirs();
             }
-            System.out.println("开始克隆代码");
+
+            logger.info("开始克隆代码");
             GitUtil.cloneCode(gitAddress, branchCodeDir, branch, credentialsProvider);
-            System.out.println("代码克隆结束");
-
-            System.out.println("开始创建apidoc页面");
+            logger.info("代码克隆结束");
+            
+            logger.info("开始创建apidoc页面");
             GitUtil.createApisHtml(branchCodeDir.getPath(), apidochDir.getPath());
-            System.out.println("创建apidoc页面结束");
+            logger.info("创建apidoc页面结束");
 
-
-            String apidataJsonPath = apidochDir.getPath() + "/api_data.json";
-            String projectJsonPath = apidochDir.getPath() + "/api_project.json";
+            String apidataJsonPath = apidochDir.getPath() + File.separator + "api_data.json";
+            String projectJsonPath = apidochDir.getPath() + File.separator + "api_project.json";
 
             String apiDataContent = FileUtil.readFile(apidataJsonPath);
             String projectContent = FileUtil.readFile(projectJsonPath);
             ifromAComponent.syncApidoc(alias, branch, projectContent, apiDataContent);
+            
+            logger.info("api导入成功后，通知case修改systembranch状态为同步成功");
+            JSONObject jsonObj = new JSONObject();
+            jsonObj.put("system", system);
+            jsonObj.put("branch", branch);
+            jsonObj.put("version", remoteVersionCode);
+            jsonObj.put("optstatus", 4);
+            remoteTestCase.updateSystemBrach(jsonObj);
 
         } catch (GitAPIException | IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);

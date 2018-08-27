@@ -1,15 +1,5 @@
 package com.nonobank.inter.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.nonobank.inter.entity.apidomain.*;
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -17,7 +7,26 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.nonobank.inter.entity.apidomain.Apidoc;
+import com.nonobank.inter.entity.apidomain.Parameter;
+import com.nonobank.inter.entity.apidomain.Parameter_;
+import com.nonobank.inter.entity.apidomain.Success;
+import com.nonobank.inter.entity.apidomain.Success200;
 
 /**
  * Created by tangrubei on 2017/3/28.
@@ -132,7 +141,7 @@ public class ApidocUtil {
                 if (field.length == 1 && remap.get(field[0]) == null) {
                     remap.put(field[0], ceateObject(parameter_));
                 } else if (field.length > 1) {
-                    Object currentObject = null;
+                    Object currentObject = null; 
                     for (int i = 0; i < field.length - 1; i++) {
                         if (currentObject == null) {
                             currentObject = remap.get(field[i]);
@@ -141,6 +150,10 @@ public class ApidocUtil {
                                 currentObject = ((Map) currentObject).get(field[i]);
                             } else if (currentObject instanceof List) {
                                 currentObject = ((List) currentObject).get(0);
+                                
+                                if (currentObject instanceof Map) {
+                                    currentObject = ((Map) currentObject).get(field[i]);
+                                }
                             }
                         }
                     }
@@ -153,9 +166,24 @@ public class ApidocUtil {
                         }
                     }
                     Object obj = ceateObject(parameter_);
+                    
                     if (!(currentObject instanceof Map)) {
                         currentObject = new HashMap<>();
+//                        ((Map) currentObject).put(field[field.length - 1], obj);
+                    }else if(currentObject instanceof Map){
+                    	/*int size = ((Map) currentObject).size();
+                    	
+                    	if(size > 0){
+                    		((Map) currentObject).forEach((k,v)->{
+                    			if(v instanceof Map){
+                    				((Map)v).put(field[field.length - 1], obj);
+                    			}
+                    		});
+                    	}else{
+                    		 ((Map) currentObject).put(field[field.length - 1], obj);
+                    	}*/
                     }
+                    
                     ((Map) currentObject).put(field[field.length - 1], obj);
                 }
             }

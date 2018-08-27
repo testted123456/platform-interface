@@ -35,4 +35,5 @@
 		<appender-ref ref="fileInfoLog" />
 		<appender-ref ref="fileErrorLog" />
 	</root>
+	<logger name="org.hibernate.SQL" level="DEBUG" />  
 </configuration>

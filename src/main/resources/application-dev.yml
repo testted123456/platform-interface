@@ -2,19 +2,19 @@ server:
  port: 9100
  context-path: /inter
 httpServer:
-  caseServer: http://192.168.1.121:9200/case/
+  caseServer: http://127.0.0.1:9200/case/
   user:
-    baseUrl: http://192.168.1.122:9090
+    baseUrl: http://127.0.0.1:9090
     roleUrlpath: /user/getRoleUrlPathBySystem?system=group
 spring:
   redis:
-    host: 192.168.1.123
+    host: 192.168.1.121
     port: 6379
     timeout: 20000
   session:
     store-type: redis
   datasource:
-    url: jdbc:mysql://192.168.1.123:3306/testingplatform?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://192.168.1.121:3306/testingplatform?useUnicode=true&characterEncoding=utf-8
     username: root
     password: Imobpay123456!
     driver-class-name: com.mysql.jdbc.Driver
@@ -36,4 +36,4 @@ JAVA_HOME: /usr/bin/java
 
 ignore:
   urlPath:
-  ip: 192.168.1.120,192.168.1.121,192.168.1.122,192.168.1.123
+  ip: 127.0.0.1

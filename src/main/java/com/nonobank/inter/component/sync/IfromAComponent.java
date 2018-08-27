@@ -1,6 +1,8 @@
 package com.nonobank.inter.component.sync;
 
 import com.alibaba.fastjson.JSONObject;
+import com.nonobank.inter.component.strategy.ApiDocStrategy;
+import com.nonobank.inter.component.strategy.RouterApiStrategy;
 import com.nonobank.inter.entity.InterfaceDefinition;
 import com.nonobank.inter.entity.apidomain.Apidoc;
 import com.nonobank.inter.repository.InterfaceDefinitionRepository;
@@ -70,20 +72,30 @@ public class IfromAComponent {
         if (null == interfaceDefinition) {
             interfaceDefinition = new InterfaceDefinition();
         }
+        
+        //根据系统重置消息头、消息体
+        ApiDocStrategy apiDocStrategy = null;
+        
+        if(system.startsWith("Pay")){//java前置接口
+        	apiDocStrategy = new RouterApiStrategy();
+        }
+        
         interfaceDefinition.setName(apidoc.getTitle());
         interfaceDefinition.setDescription(apidoc.getDescription());
         interfaceDefinition.setPostWay((TYPE_POST.equals(apidoc.getType().toLowerCase()) ? '1' : '0'));
         interfaceDefinition.setUrlAddress(apidoc.getUrl());
+        interfaceDefinition.setRequestHead(apiDocStrategy.getRequestHead());
+        
         if (interfaceDefinition.getId() == null) {
             interfaceDefinition.setCreatedBy("System");
             interfaceDefinition.setCreatedTime(LocalDateTime.now());
-            interfaceDefinition.setRequestHead("[{\"Content-Type\": \"application/json\"}]");
-
+//            interfaceDefinition.setRequestHead("[{\"Content-Type\": \"application/json\"}]");
         } else {
-            interfaceDefinition.setRequestHead("[{\"Content-Type\": \"application/json\"}]");
+//            interfaceDefinition.setRequestHead("[{\"Content-Type\": \"application/json\"}]");
             interfaceDefinition.setUpdatedBy("System");
             interfaceDefinition.setUpdatedTime(LocalDateTime.now());
         }
+        
         interfaceDefinition.setSystem(system);
         interfaceDefinition.setBranch(branch);
         interfaceDefinition.setModule(apidoc.getGroupTitle());
@@ -92,9 +104,14 @@ public class IfromAComponent {
 
         Character apiType = this.protocol != '3' ? this.protocol : func_get_portocol_type.apply(apidoc.getUrl());
         interfaceDefinition.setApiType(apiType);
+        
+        interfaceDefinition.setResponseBodyType(apiDocStrategy.getResponseBodyType());
 
-        interfaceDefinition.setRequestBody(ApidocUtil.parameter2json(apidoc.getParameter()));
-        interfaceDefinition.setResponseBody(ApidocUtil.response2json(apidoc.getSuccess()));
+        String apiDocRequest = ApidocUtil.parameter2json(apidoc.getParameter());
+        String apiDocResponse = ApidocUtil.response2json(apidoc.getSuccess());
+        
+        interfaceDefinition.setRequestBody(apiDocStrategy.getRequest(apiDocRequest));
+        interfaceDefinition.setResponseBody(apiDocStrategy.getResponse(apiDocResponse));
         return interfaceDefinition;
     }
 

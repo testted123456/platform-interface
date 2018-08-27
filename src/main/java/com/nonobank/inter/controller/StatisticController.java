@@ -106,4 +106,12 @@ public class StatisticController {
 		Map<String, List<?>> map = groupStatistics.groupStatisSuccessRate();
 		return ResultUtil.success(map);
 	}
+	
+	@GetMapping(value="groupStatisDetail")
+	@ResponseBody
+	public Result groupStatisDetail(){
+		logger.info("开始统计用例执行统计...");
+		List<Map<String, String>> map = groupStatistics.groupStatisDetail();
+		return ResultUtil.success(map);
+	}
 }

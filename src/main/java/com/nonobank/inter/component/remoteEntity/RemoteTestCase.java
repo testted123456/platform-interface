@@ -24,6 +24,18 @@ public class RemoteTestCase {
 	 	@Value("${httpServer.caseServer}")
 	    private String caseServer;
 	 	
+	 	public void updateSystemBrach(JSONObject jsonObj){
+	 		HttpClient httpClient = new HttpClient();
+			CloseableHttpClient client = httpClient.getHttpClient();
+			CloseableHttpResponse response = null;
+			
+			try {
+				response = httpClient.doPostSendJson(client, null, caseServer  + "sysBranch/updateBySystemAndBranch", jsonObj.toJSONString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+	 	}
+	 	
 	 	public void noticeSyncResult(Integer result, String system, String branch, String version){
 	 		Map<String, String> map = new HashMap<>();
 	 		map.put("system", system);

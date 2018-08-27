@@ -126,6 +126,13 @@ public class GitUtil {
     	if(!file.exists()){
         	file.mkdirs();
         }
+    	
+    	String os = System.getProperty("os.name");
+    	if(os.toLowerCase().startsWith("win")){
+    		Runtime rt = Runtime.getRuntime();
+    		Process p = rt.exec("C:\\Users\\xinxiang\\AppData\\Roaming\\npm\\apidoc.cmd -i " + myappPath+" -o " + apidocPath);
+            return p.toString();
+    	}
         
         String command = "export PATH=$PATH:/usr/local/bin/;apidoc -i "+myappPath+" -o "+apidocPath;
         

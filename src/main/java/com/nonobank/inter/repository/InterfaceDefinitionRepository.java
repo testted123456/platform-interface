@@ -57,8 +57,6 @@ public interface InterfaceDefinitionRepository extends JpaRepository<InterfaceDe
     @Query(value="select system, count(*) from test_case where optstatus!=2  and type=1 group by system", nativeQuery = true)
     List<Object[]> caseStatisGroupBySystem();
     
-
-
     @Query(value="select id, name, cases from test_group where optstatus!=2 and type=1 and cases is not null", nativeQuery = true)
     List<Object[]> caseStatisGroupByRef();
     
@@ -69,5 +67,14 @@ public interface InterfaceDefinitionRepository extends JpaRepository<InterfaceDe
     	"(select tg.name, max(rh.id) as historyId from test_group tg inner join result_history rh on tg.id=rh.group_id " + 
     	"group by tg.name)t inner join result_detail rd on t.historyId=history_id", nativeQuery = true)
     List<Object[]> groupStatisSuccessRate();
+    
+    //查询group执行情况统计
+    @Query(value="select tmp1.id, tmp1.name, tmp1.history_id, tmp1.create_time, tmp1.created_by, rh.total_size, rd.result, rd.tc_id from " +
+		"(select id, name, created_by, max(history_id) history_id, max(created_time) create_time from " +
+		"(select tg.id, tg.name, tg.created_by, rh.id history_id, rh.created_time, rh.tc_ids, rh.total_size " +
+		"from test_group tg, result_history rh where tg.id=rh.group_id )tmp group by id, name " +
+		") tmp1, result_history rh, result_detail rd " +
+		"where tmp1.history_id = rh.id and tmp1.history_id = rd.history_id", nativeQuery = true)
+    List<Object[]> groupStatisDetail();
 
 }
