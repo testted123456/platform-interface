@@ -1,14 +1,12 @@
 package com.nonobank.inter.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
-import com.nonobank.inter.component.remoteEntity.RemoteTestCase;
-import com.nonobank.inter.component.sync.IfromAComponent;
-import com.nonobank.inter.component.sync.SyncContext;
-import com.nonobank.inter.controller.InterfaceController;
-import com.nonobank.inter.service.GitService;
-import com.nonobank.inter.util.FileUtil;
-import com.nonobank.inter.util.GitUtil;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectIdRef;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -19,14 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationHome;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.alibaba.fastjson.JSONObject;
+import com.nonobank.inter.component.sync.IfromAComponent;
+import com.nonobank.inter.component.sync.SyncContext;
+import com.nonobank.inter.service.GitService;
+import com.nonobank.inter.service.RemoteTestCaseService;
+import com.nonobank.inter.util.FileUtil;
+import com.nonobank.inter.util.GitUtil;
 
 /**
  * Created by tangrubei on 2018/3/8.
@@ -63,8 +60,11 @@ public class GitServiceImpl implements GitService {
     @Autowired
     private IfromAComponent ifromAComponent;
 
+//    @Autowired
+//    private RemoteTestCase remoteTestCase;
+    
     @Autowired
-    private RemoteTestCase remoteTestCase;
+    private RemoteTestCaseService remoteTestCaseService;
 
     //    private static Logger log = LogManager.getLogger(GitServiceImpl.class);
     public static Logger logger = LoggerFactory.getLogger(GitServiceImpl.class);
@@ -155,7 +155,8 @@ public class GitServiceImpl implements GitService {
             jsonObj.put("branch", branch);
             jsonObj.put("version", remoteVersionCode);
             jsonObj.put("optstatus", 4);
-            remoteTestCase.updateSystemBrach(jsonObj);
+//            remoteTestCase.updateSystemBrach(jsonObj);
+            remoteTestCaseService.updateSystemBrach(jsonObj);
 
         } catch (GitAPIException | IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -163,9 +164,8 @@ public class GitServiceImpl implements GitService {
             SyncContext.INSTANCE.getMap().remove(system + branch);
 
         }
-
-
     }
+    
     @Override
     public void cloneCode(String system, String branch, String gitAddress){
         CredentialsProvider credentialsProvider = GitUtil.createCredentialsProvider(username, password);

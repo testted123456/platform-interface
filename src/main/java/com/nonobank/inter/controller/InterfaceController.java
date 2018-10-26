@@ -28,13 +28,14 @@ import com.nonobank.inter.component.convert.ApiConvert;
 import com.nonobank.inter.component.result.Result;
 import com.nonobank.inter.component.result.ResultCode;
 import com.nonobank.inter.component.result.ResultUtil;
-import com.nonobank.inter.component.security.manager.MyAccessDecisionManager;
+import com.nonobank.inter.component.security.manager.InterAccessDecisionManager;
 import com.nonobank.inter.component.sync.SyncContext;
 import com.nonobank.inter.entity.GitRequestEntity;
 import com.nonobank.inter.entity.InterfaceDefinition;
 import com.nonobank.inter.entity.InterfaceDefinitionFront;
 import com.nonobank.inter.service.GitService;
 import com.nonobank.inter.service.InterfaceDefinitionService;
+import com.nonobank.inter.service.UserFeignService;
 import com.nonobank.inter.util.UserUtil;
 
 @Controller
@@ -45,6 +46,9 @@ public class InterfaceController {
 	public static Logger logger = LoggerFactory.getLogger(InterfaceController.class);
 	
 	@Autowired
+	UserFeignService userFeignService;
+	
+	@Autowired
 	InterfaceDefinitionService interfaceDefinitionService;
 
 	@Autowired
@@ -52,7 +56,13 @@ public class InterfaceController {
 
 	
 	@Autowired
-	MyAccessDecisionManager myAccessDecisionManager;
+	InterAccessDecisionManager myAccessDecisionManager;
+	
+	@GetMapping(value="/getAllRoles")
+	@ResponseBody
+	public Result getAllRoles(){
+		return userFeignService.getAllRoles();
+	}
 	
 	/**
 	 * reload url权限

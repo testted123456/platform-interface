@@ -17,12 +17,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
+
 import com.nonobank.inter.component.remoteEntity.RemoteUser;
 import com.nonobank.inter.repository.RoleUrlPathRepository;
 import com.nonobank.inter.util.IpAdrressUtil;
 
 @Component
-public class MyAccessDecisionManager implements AccessDecisionManager {
+public class InterAccessDecisionManager implements AccessDecisionManager {
 
     private static Map<String, String> urlMap;
 

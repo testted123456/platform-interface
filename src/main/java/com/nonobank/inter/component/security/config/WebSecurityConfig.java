@@ -1,10 +1,6 @@
 package com.nonobank.inter.component.security.config;
 
-import java.io.IOException;
-
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +10,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
@@ -36,38 +31,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	
-    	http.csrf().disable().
-//    	anonymous().disable().
-    	authorizeRequests().anyRequest().authenticated().accessDecisionManager(accessDecisionManager);
+    	http.csrf().disable();
+//    	authorizeRequests().anyRequest().authenticated().accessDecisionManager(accessDecisionManager);
     	
     	//处理没有登陆用户
-    	http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
+    	//http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
     	
     	//没有权限
-    	http.exceptionHandling().accessDeniedHandler(accessDeniedHandler);
-    	
-//        http.csrf().disable().authorizeRequests().antMatchers("/*").authenticated()
-//                .accessDecisionManager(accessDecisionManager);
-
-//        http.csrf().disable().authorizeRequests()
-//                .antMatchers("/login").permitAll()
-//                .antMatchers("/index").hasRole("Admin").accessDecisionManager(accessDecisionManager);
+    	//http.exceptionHandling().accessDeniedHandler(accessDeniedHandler);
     }
-
-
-    /**
-     * 权限不通过的处理
-     */
-    /**
-    public static class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
-        @Override
-        public void commence(HttpServletRequest request,
-                             HttpServletResponse response,
-                             AuthenticationException authException) throws IOException {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                    "Authentication Failed: " + authException.getMessage());
-        }
-    }**/
 
 }
 

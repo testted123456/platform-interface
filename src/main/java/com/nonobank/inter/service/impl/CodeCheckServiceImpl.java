@@ -12,11 +12,11 @@ import org.springframework.boot.ApplicationHome;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSONObject;
-import com.nonobank.inter.component.remoteEntity.RemoteTestCase;
+//import com.nonobank.inter.component.remoteEntity.RemoteTestCase;
 import com.nonobank.inter.service.CodeCheckService;
 import com.nonobank.inter.service.GitService;
+import com.nonobank.inter.service.RemoteTestCaseService;
 
 @Service
 @EnableAsync
@@ -36,8 +36,11 @@ public class CodeCheckServiceImpl implements CodeCheckService {
 	@Value("${JAVA_HOME}")
 	private String JAVA_HOME;
 	
+//	@Autowired
+//	RemoteTestCase remoteTestCase;
+	
 	@Autowired
-	RemoteTestCase remoteTestCase;
+	RemoteTestCaseService remoteTestCaseService;
 	
 	@Autowired
 	GitService gitService;
@@ -51,7 +54,8 @@ public class CodeCheckServiceImpl implements CodeCheckService {
 
 	        if(!branchCodeDir.exists()){
 	        	logger.warn("{" + system +"}代码还未clone...");
-	        	JSONObject jsonOfSysCfg = remoteTestCase.getSysCfg(system);
+//	        	JSONObject jsonOfSysCfg = remoteTestCase.getSysCfg(system);
+	        	JSONObject jsonOfSysCfg = remoteTestCaseService.getSysCfg(system);
 	        	String gitAddress = jsonOfSysCfg.getString("gitAddress");
 	        	gitService.cloneCode(system, branch, gitAddress);
 	        }
@@ -83,7 +87,8 @@ public class CodeCheckServiceImpl implements CodeCheckService {
 			}
 	        
 	        //同步codeChecked
-	        remoteTestCase.setCodeChecked(system, branch, "true");
+//	        remoteTestCase.setCodeChecked(system, branch, "true");
+	        remoteTestCaseService.setCodeChecked(system, branch, "true");
 	}
 
 }

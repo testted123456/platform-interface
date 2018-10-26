@@ -37,7 +37,7 @@ public class GitRequestEntity {
     private String branch;
 
     @NotNull(message = "版本号不能为空",groups = {ValidateSyncApi.class})
-    @Length(message = "版本号不能为空",min = 1,groups = {ValidateSyncApi.class})
+    @Length(message = "版本号不能为空",min = 0,groups = {ValidateSyncApi.class})
     private String versionCode;
 
     public String getSystem() {
