@@ -1,6 +1,7 @@
 package com.nonobank.inter.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,7 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 		InterfaceDefinition api = interfaceDefinitionRepository.findByIdAndOptstatusEquals(id, (short)0);
 		List<InterfaceDefinition> apis = interfaceDefinitionRepository.findByPIdAndOptstatusEquals(id, (short)0);
 		
-		api.setUpdatedTime(LocalDateTime.now());
+		api.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 		api.setOptstatus((short)2);
 		api.setUpdatedBy(userName);
 		interfaceDefinitionRepository.save(api);
@@ -62,7 +63,7 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 			
 			if(inter.getType() == true){
 				inter.setOptstatus((short)2);
-				inter.setUpdatedTime(LocalDateTime.now());
+				inter.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 				inter.setUpdatedBy(userName);
 				interfaceDefinitionRepository.save(inter);
 			}else{

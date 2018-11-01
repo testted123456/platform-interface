@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,12 +89,12 @@ public class IfromAComponent {
         
         if (interfaceDefinition.getId() == null) {
             interfaceDefinition.setCreatedBy("System");
-            interfaceDefinition.setCreatedTime(LocalDateTime.now());
+            interfaceDefinition.setCreatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 //            interfaceDefinition.setRequestHead("[{\"Content-Type\": \"application/json\"}]");
         } else {
 //            interfaceDefinition.setRequestHead("[{\"Content-Type\": \"application/json\"}]");
             interfaceDefinition.setUpdatedBy("System");
-            interfaceDefinition.setUpdatedTime(LocalDateTime.now());
+            interfaceDefinition.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
         }
         
         interfaceDefinition.setSystem(system);
@@ -129,7 +130,7 @@ public class IfromAComponent {
         dirDefinition.setName(name);
         dirDefinition.setType(false);
         dirDefinition.setpId(pid);
-        dirDefinition.setCreatedTime(LocalDateTime.now());
+        dirDefinition.setCreatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
         dirDefinition.setCreatedBy("system");
         dirDefinition.setOptstatus((short) 0);
         interfaceDefinitionRepository.save(dirDefinition);

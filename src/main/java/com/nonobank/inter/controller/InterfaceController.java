@@ -4,6 +4,7 @@ package com.nonobank.inter.controller;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -90,7 +91,7 @@ public class InterfaceController {
 		interfaceDefinition.setType(false);
 		interfaceDefinition.setOptstatus((short)0);
 		interfaceDefinition.setCreatedBy(userName);
-		interfaceDefinition.setCreatedTime(LocalDateTime.now());
+		interfaceDefinition.setCreatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 		InterfaceDefinition api = interfaceDefinitionService.add(interfaceDefinition);
 		logger.info("开始新增接口目录成功，接口ID：", api.getId());
 		return ResultUtil.success(api);
@@ -116,7 +117,7 @@ public class InterfaceController {
 			interfaceDefinition.setOptstatus((short)0);
 			interfaceDefinition.setType(true);
 			interfaceDefinition.setCreatedBy(UserUtil.getUser());
-			interfaceDefinition.setCreatedTime(LocalDateTime.now());
+			interfaceDefinition.setCreatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 			InterfaceDefinition api = interfaceDefinitionService.add(interfaceDefinition);
 			logger.info("开始新增接口成功，接口ID：", api.getId());
 			return ResultUtil.success(api);
@@ -142,7 +143,7 @@ public class InterfaceController {
 		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
 		String userName = UserUtil.getUser();
 		interfaceDefinition.setUpdatedBy(userName);
-		interfaceDefinition.setUpdatedTime(LocalDateTime.now());
+		interfaceDefinition.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 		interfaceDefinition = interfaceDefinitionService.update(interfaceDefinition);
 		
 		return ResultUtil.success(interfaceDefinition);
@@ -167,7 +168,7 @@ public class InterfaceController {
 //		interfaceDefinition.setOptstatus((short)0);
 		InterfaceDefinition interfaceDefinition = ApiConvert.convertFront2Api(interfaceDefinitionFront);
 		interfaceDefinition.setUpdatedBy(UserUtil.getUser());
-		interfaceDefinition.setUpdatedTime(LocalDateTime.now());
+		interfaceDefinition.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 		interfaceDefinition = interfaceDefinitionService.update(interfaceDefinition);
 		return ResultUtil.success();
 	}
