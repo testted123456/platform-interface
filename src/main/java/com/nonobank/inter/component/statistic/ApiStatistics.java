@@ -38,6 +38,26 @@ public class ApiStatistics {
 		List<Object> refs = new ArrayList<>();
 		List<Object> unRefs = new ArrayList<>();
 		
+		for(Object [] args : statis){
+			if(null == args[0]){//系统
+				data.add("未知");
+			}else{
+				data.add(args[0]);
+			}
+			
+			if(null == args[2]){//ref，被引用的api数
+				refs.add(0);
+			}else{
+				refs.add(args[2]);
+			}
+			
+			if(null == args[3]){//unRefs,未被引用的api数
+				unRefs.add(args[1]);
+			}else{
+				unRefs.add(args[3]);
+			}
+		}
+		/*
 		Map<Object, List<Object[]>> map =
 		statis.stream().collect(Collectors.groupingBy(x->{
 			return x[0];
@@ -67,12 +87,12 @@ public class ApiStatistics {
 					unRefs.add((v.get(1)[2]));
 				}
 			}
-		});
+		});*/
 		
 		Map<String, List<?>> result = new HashMap<>();
 		result.put("data", data);
-		result.put("refs", refs);
 		result.put("unRefs", unRefs);
+		result.put("refs", refs);
 		return result;
 	}
 	

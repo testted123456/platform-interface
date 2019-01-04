@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.nonobank.inter.component.exception.ApiException;
 import com.nonobank.inter.component.result.Result;
@@ -62,11 +63,24 @@ public class RemoteTestCaseServiceImpl implements RemoteTestCaseService {
 		
 		if(result.getCode() == 10000){
 			Object obj = result.getData();
-			String str = String.valueOf(obj);
+			String str = JSON.toJSONString(obj);
+			logger.info("str:{}", str);
 			return JSONObject.parseObject(str);
 		}else{
 			logger.error("查询sysCfg失败，" + result.getMsg());
 			throw new ApiException(ResultCode.VALIDATION_ERROR.getCode(), "获取sysCfg信息失败");
+		}
+	}
+
+	@Override
+	public boolean getByApiId(Integer apiId) {
+		// TODO Auto-generated method stub
+		Result result = remoteTestCase.getByApiId(apiId);
+		
+		if(result.getCode() == 10000 && result.getData() != null){
+			return true;
+		}else{
+			return false;
 		}
 	}
 

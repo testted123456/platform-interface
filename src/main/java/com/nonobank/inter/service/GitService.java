@@ -17,4 +17,6 @@ public interface GitService {
     public void cloneCode(String system, String branch, String gitAddress);
 
     public void checkCode(String system, String branch);
+    
+    public void genDoc();
 }

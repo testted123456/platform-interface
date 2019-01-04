@@ -2,26 +2,31 @@ package com.nonobank.inter.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.nonobank.inter.component.exception.ApiException;
+import com.nonobank.inter.component.result.ResultCode;
 import com.nonobank.inter.entity.InterfaceDefinition;
 import com.nonobank.inter.repository.InterfaceDefinitionRepository;
 import com.nonobank.inter.service.InterfaceDefinitionService;
+import com.nonobank.inter.service.RemoteTestCaseService;
 
 @Service
 public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionService {
+	
+	public static Logger logger = LoggerFactory.getLogger(InterfaceDefinitionServiceImpl.class);
 
 	@Autowired
 	InterfaceDefinitionRepository interfaceDefinitionRepository;
+	
+	@Autowired
+	RemoteTestCaseService remoteTestCaseService;
 
 	@Override
 	public List<InterfaceDefinition> findByPId(Integer pId){
@@ -47,29 +52,60 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 	public List<InterfaceDefinition> findByIdAndBranch(Integer id, String branch) {
 		return interfaceDefinitionRepository.findByIdAndBranchAndOptstatusEquals(id, branch, (short)0);
 	}
-
+	
 	@Override
-	@Transactional
-	public void delApiDir(String userName, Integer id) {
+	public boolean delApi(String userName, Integer id){
 		InterfaceDefinition api = interfaceDefinitionRepository.findByIdAndOptstatusEquals(id, (short)0);
-		List<InterfaceDefinition> apis = interfaceDefinitionRepository.findByPIdAndOptstatusEquals(id, (short)0);
+		
+		boolean isApiUsed = remoteTestCaseService.getByApiId(id);
+		
+		if(true == isApiUsed){//api被case引用
+			logger.info("api已被case引用，api id:{}", id);
+			return false;
+		}
 		
 		api.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 		api.setOptstatus((short)2);
 		api.setUpdatedBy(userName);
 		interfaceDefinitionRepository.save(api);
 		
+		return true;
+	}
+
+	@Override
+	@Transactional
+	public boolean delApiDir(String userName, Integer id) {
+		InterfaceDefinition api = interfaceDefinitionRepository.findByIdAndOptstatusEquals(id, (short)0);
+		
+		if(null == api){
+			return true;
+		}
+		
+		api.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+		api.setOptstatus((short)2);
+		api.setUpdatedBy(userName);
+		interfaceDefinitionRepository.save(api);
+		
+		List<InterfaceDefinition> apis = interfaceDefinitionRepository.findByPIdAndOptstatusEquals(id, (short)0);
+		
 		for(InterfaceDefinition inter : apis){
-			
 			if(inter.getType() == true){
-				inter.setOptstatus((short)2);
-				inter.setUpdatedTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
-				inter.setUpdatedBy(userName);
-				interfaceDefinitionRepository.save(inter);
+				boolean result = delApi(userName, inter.getId());
+				
+				if(false == result){
+					throw new ApiException(ResultCode.VALIDATION_ERROR.getCode(), "api id:" + inter.getId() + "已被case引用！");
+				}
 			}else{
-				delApiDir(userName, inter.getId());
+				boolean result = delApiDir(userName, inter.getId());
+				
+				if(false == result){ 
+					throw new ApiException(ResultCode.VALIDATION_ERROR.getCode(), "api id:" + inter.getId() + "已被case引用！");
+				}
 			}
 		}
+		
+		return true;
+		
 	}
 
 	@Override
@@ -83,9 +119,9 @@ public class InterfaceDefinitionServiceImpl implements InterfaceDefinitionServic
 	}
 
 	@Override
-	public List<InterfaceDefinition> serarchApi(String name, String urlAddress, String branch, String module, String system, Boolean type) {
+	public List<InterfaceDefinition> serarchApi(String name, String urlAddress, String branch, String module, String system, String app) {
 		List<InterfaceDefinition> apis =  
-				interfaceDefinitionRepository.searchApi(name, urlAddress, branch, module, system);
+				interfaceDefinitionRepository.searchApi(name, urlAddress, branch, module, system, app);
 		return apis;
 		/*
 		Map<Integer, JSONObject> map = new HashMap<Integer, JSONObject>();

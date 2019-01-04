@@ -102,7 +102,7 @@ public class StatisticController {
 	@GetMapping(value="groupStatisSuccessRate")
 	@ResponseBody
 	public Result groupStatisSuccessRate(){
-		logger.info("开始统计用例被被引用数...");
+		logger.info("开始统计测试集中用例执行成功率...");
 		Map<String, List<?>> map = groupStatistics.groupStatisSuccessRate();
 		return ResultUtil.success(map);
 	}

@@ -21,10 +21,12 @@ public interface InterfaceDefinitionService {
 	
 	InterfaceDefinition update(InterfaceDefinition interfaceDefinition);
 	
-	void delApiDir(String userName, Integer id);
+	boolean delApiDir(String userName, Integer id);
+	
+    boolean delApi(String userName, Integer id);
 	
 	List<InterfaceDefinition> findByIdIn(List<Integer> ids);
 	 
-	List<InterfaceDefinition> serarchApi(String name, String url, String branch, String module, String system, Boolean type);
+	List<InterfaceDefinition> serarchApi(String name, String url, String branch, String module, String system, String app);
 
 }

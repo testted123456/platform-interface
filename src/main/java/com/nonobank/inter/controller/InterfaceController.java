@@ -1,6 +1,5 @@
 package com.nonobank.inter.controller;
 
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.alibaba.fastjson.JSONObject;
 import com.nonobank.inter.component.convert.ApiConvert;
 import com.nonobank.inter.component.result.Result;
 import com.nonobank.inter.component.result.ResultCode;
@@ -55,7 +53,6 @@ public class InterfaceController {
 	@Autowired
 	private GitService gitService;
 
-	
 	@Autowired
 	InterAccessDecisionManager myAccessDecisionManager;
 	
@@ -184,19 +181,13 @@ public class InterfaceController {
 	public Result delApi( @RequestParam(required=true) Integer id){
 		logger.info("开始删除api，id：{}", id);
 		
-		InterfaceDefinition api = interfaceDefinitionService.findById(id);
+		boolean result = interfaceDefinitionService.delApi(UserUtil.getUser(), id);
 		
-		if(null != api){
-			api.setOptstatus((short)2);
-			api.setUpdatedBy(UserUtil.getUser());
-			interfaceDefinitionService.update(api);
-			logger.info("删除api成功，id:{}", id);
+		if(false == result){
+			return ResultUtil.error(ResultCode.EXCEPTION_ERROR.getCode(), "api不存在或已被case引用！");
 		}else{
-			logger.error("待删除的api不存在, id:{}", id);
-			return ResultUtil.error(ResultCode.EMPTY_ERROR.getCode(), "待删除的api不存在");
+			return ResultUtil.success();
 		}
-		
-		return ResultUtil.success();
 	}
 	
 	/**
@@ -209,9 +200,13 @@ public class InterfaceController {
 	@ResponseBody
 	public Result delApiDir(@RequestParam(required=true) Integer id){
 		logger.info("开始删除apiDir，id：{}", id);
-		interfaceDefinitionService.delApiDir(UserUtil.getUser(), id);
-		logger.info("开始删除apiDir成功，id：{}", id);
-		return ResultUtil.success();
+		boolean result = interfaceDefinitionService.delApiDir(UserUtil.getUser(), id);
+
+		if(false == result){
+			return ResultUtil.error(ResultCode.EXCEPTION_ERROR.getCode(), "api不存在或已被case引用！");
+		}else{
+			return ResultUtil.success();
+		}
 	}
 	
 	/**
@@ -285,11 +280,8 @@ public class InterfaceController {
 		}
 	}
 
-
 	/**
-	 * 根据父节点Id查询子节点树
-	 *
-	 *
+	 * 导入Api定义
 	 * @param
 	 * @param
 	 * @return
@@ -328,9 +320,10 @@ public class InterfaceController {
 	
 	@GetMapping(value = "searchApi")
 	@ResponseBody
-	public Result searchApi(@RequestParam String name, @RequestParam String urlAddress, @RequestParam String branch, @RequestParam String module, @RequestParam String system){
+	public Result searchApi(@RequestParam String name, @RequestParam String urlAddress, @RequestParam String branch, @RequestParam String module, @RequestParam String system, 
+			@RequestParam String app){
 		logger.info("开始过滤接口");
-		List<InterfaceDefinition> list = interfaceDefinitionService.serarchApi(name, urlAddress, branch, module, system, true);
+		List<InterfaceDefinition> list = interfaceDefinitionService.serarchApi(name, urlAddress, branch, module, system, app);
 		List<InterfaceDefinitionFront> idff = new ArrayList<>();
 		list.forEach(x->{
 			idff.add(ApiConvert.convertApi2Front(x));
@@ -338,4 +331,19 @@ public class InterfaceController {
 		return ResultUtil.success(idff);
 	}
 	
+	@GetMapping(value="genDoc")
+	@ResponseBody
+	public Result genDoc(){
+		logger.info("开始生成汇总接口文档...");
+		try{
+			gitService.genDoc();
+		}catch(Exception e){
+			logger.error("生成汇总接口文档失败...");
+			e.printStackTrace();
+			return ResultUtil.error(ResultCode.EXCEPTION_ERROR.getCode(), "生成汇总接口文档异常...");
+		}
+		
+		logger.info("汇总接口文档生成成功...");
+		return ResultUtil.success();
+	}
 }

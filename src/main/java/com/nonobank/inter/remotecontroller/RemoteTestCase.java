@@ -21,11 +21,15 @@ public interface RemoteTestCase {
 	@ResponseBody
 	Result noticeSyncResult(@RequestParam(value="result") String result, @RequestParam(value="system") String system, @RequestParam(value="branch") String branch, @RequestParam(value="version") String version);
 
-	@GetMapping(value="sysBranch/noticeSyncResult")
+	@GetMapping(value="sysBranch/setCodeChecked")
 	@ResponseBody
 	Result setCodeChecked(@RequestParam(value="system") String system, @RequestParam(value="branch") String branch, @RequestParam(value="codeChecked") String codeChecked);
 
 	@GetMapping(value="sysCfg/getBySystem")
 	@ResponseBody
 	Result getSysCfg(@RequestParam(value="system") String system);
+	
+	@GetMapping(value="testCaseInterface/getByApiId")
+	@ResponseBody
+	Result getByApiId(@RequestParam(value="apiId") Integer apiId);
 }

@@ -1,22 +1,24 @@
 package com.nonobank.inter.component.statistic;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.JSONArray;
 import com.nonobank.inter.repository.InterfaceDefinitionRepository;
 
-import scala.collection.parallel.ParIterableLike.ResultMapping;
-
 @Component
 public class GroupStatistics {
+	
+	public static Logger logger = LoggerFactory.getLogger(GroupStatistics.class);
 
 	@Autowired
 	InterfaceDefinitionRepository interfaceDefinitionRepository;
@@ -49,15 +51,49 @@ public class GroupStatistics {
 	}
 	
 	public Map<String, List<?>> groupStatisSuccessRate(){
+		//historyid name total_size tc_id result
 		List<Object[]> statis = interfaceDefinitionRepository.groupStatisSuccessRate();
 		
-		Map<Object, List<Object[]>> map =
-		statis.stream().collect(Collectors.groupingBy(x->{return x[0];}));
+		Map<Object, List<Object[]>> map2 =
+		statis.stream().collect(Collectors.groupingBy(x->{return x[0];}));//按historyid分组
+		
+		Map<Object, Map<Object, Map<Object, Map<Object, List<Object[]>>>>> map =
+		statis.stream().collect(Collectors.groupingBy(x->{return x[0];}, 
+				Collectors.groupingBy(x->{return x[1];}, 
+						Collectors.groupingBy(x->{return x[2];},
+								Collectors.groupingBy(x->{return x[3];})))));
 		
 		List<String> data = new ArrayList<>();
 		List<Object> series = new ArrayList<>();
 		
 		map.forEach((k,v)->{
+			v.forEach((k1,v1)->{
+				data.add(String.valueOf(k1)); //测试集名称
+				v1.forEach((k2,v2)->{
+					Integer totalSize = Integer.valueOf(String.valueOf(k2));
+					Integer failSize = 0;
+					Set<Map.Entry<Object,List<Object[]>>> set = v2.entrySet();
+					
+					for(Map.Entry<Object,List<Object[]>> entry : set){
+						List<Object[]> list = entry.getValue();
+						long count = list.stream().filter(x->{return String.valueOf(x[4]).equals("false");}).count();
+						if(count>0){
+							failSize++;
+						}
+					}
+					DecimalFormat df=new DecimalFormat("0.00");
+					Float failRate = Float.valueOf(df.format((float)failSize/totalSize));
+					String rate = df.format((float)1-failRate);
+
+//					System.out.print(rate);
+					series.add(rate);
+				});
+			});
+		});
+		
+		/*statis.stream().filter(x->{return x.equals("0");}).count();
+		
+		map2.forEach((k,v)->{
 			data.add(String.valueOf(k));
 			int totalSize = v.size();
 			long l = v.stream().filter(x->{return "0".equals(x[0]);}).count();
@@ -67,7 +103,7 @@ public class GroupStatistics {
 			}else{
 				series.add(0);
 			}
-		});
+		});*/
 		
 		Map<String, List<?>> resultMap = new HashMap<>();
 		resultMap.put("data", data);

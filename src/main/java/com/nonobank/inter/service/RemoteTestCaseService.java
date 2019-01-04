@@ -11,5 +11,7 @@ public interface RemoteTestCaseService {
 	public boolean setCodeChecked(String system, String branch, String codeChecked);
 	
 	public JSONObject getSysCfg(String system);
+	
+	public boolean getByApiId(Integer apiId);
 
 }

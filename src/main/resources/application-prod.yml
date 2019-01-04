@@ -61,8 +61,8 @@ jacocoReportPath: jacocoReport
 jacocoDumpath: jacocoDump
 classFilePath: classFile
 mvnPath: /usr/local/src/apache-maven-3.5.3/bin/mvn
-firelineJarPath: /usr/local/lib/fireline_1.4.10.jar
-JAVA_HOME: /usr/bin/java
+firelineJarPath: /home/ted/project/jar/fireline_1.6.10.jar
+JAVA_HOME: /home/ted/jdk1.8.0_141
 
 ignore:
   urlPath:

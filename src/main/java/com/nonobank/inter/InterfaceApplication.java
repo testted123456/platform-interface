@@ -1,5 +1,7 @@
 package com.nonobank.inter;
 
+import java.net.URISyntaxException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,8 +14,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.net.URISyntaxException;
 
 @SpringBootApplication
 @EnableAsync
