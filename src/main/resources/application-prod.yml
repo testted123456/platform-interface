@@ -32,7 +32,7 @@ spring:
   cloud:
     config:
       label: master
-      profile: dev
+      profile: prod
       discovery:
        enabled: true
        serviceId: PLATFORM-CONFIG-SERVER

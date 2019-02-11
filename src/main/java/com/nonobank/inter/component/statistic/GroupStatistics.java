@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,13 +55,13 @@ public class GroupStatistics {
 		List<Object[]> statis = interfaceDefinitionRepository.groupStatisSuccessRate();
 		
 		Map<Object, List<Object[]>> map2 =
-		statis.stream().collect(Collectors.groupingBy(x->{return x[0];}));//按historyid分组
+		statis.stream().collect(groupingBy(x->{return x[0];}));//按historyid分组
 		
 		Map<Object, Map<Object, Map<Object, Map<Object, List<Object[]>>>>> map =
-		statis.stream().collect(Collectors.groupingBy(x->{return x[0];}, 
-				Collectors.groupingBy(x->{return x[1];}, 
-						Collectors.groupingBy(x->{return x[2];},
-								Collectors.groupingBy(x->{return x[3];})))));
+		statis.stream().collect(groupingBy(x->{return x[0];}, 
+				groupingBy(x->{return x[1];}, 
+						groupingBy(x->{return x[2];},
+								groupingBy(x->{return x[3];})))));
 		
 		List<String> data = new ArrayList<>();
 		List<Object> series = new ArrayList<>();
@@ -91,20 +91,6 @@ public class GroupStatistics {
 			});
 		});
 		
-		/*statis.stream().filter(x->{return x.equals("0");}).count();
-		
-		map2.forEach((k,v)->{
-			data.add(String.valueOf(k));
-			int totalSize = v.size();
-			long l = v.stream().filter(x->{return "0".equals(x[0]);}).count();
-			
-			if(totalSize != 0){
-				series.add(l/totalSize);
-			}else{
-				series.add(0);
-			}
-		});*/
-		
 		Map<String, List<?>> resultMap = new HashMap<>();
 		resultMap.put("data", data);
 		resultMap.put("series", series);
@@ -112,18 +98,15 @@ public class GroupStatistics {
 		return resultMap;
 	}
 	
+	/**
+	 * group中case成功、失败数
+	 * @return
+	 */
 	public List<Map<String, String>> groupStatisDetail(){
 		List<Object[]> statis = interfaceDefinitionRepository.groupStatisDetail();
 		
-		 /*Map<Object, Map<Boolean, Map<Object, List<Object[]>>>>  map =
-		statis.stream().collect(Collectors.groupingBy(x->{return x[0];}, 
-				Collectors.partitioningBy(y->{return String.valueOf(y[5]).equals("true");},
-						Collectors.groupingBy(z->{return z[6];})
-				)
-				));*/
-		
 		Map<Object, Map<Object, List<Object[]>>> map = 
-				statis.stream().collect(Collectors.groupingBy(x->{return x[0];}, Collectors.groupingBy(y->{return y[7];})));
+				statis.stream().collect(groupingBy(x->{return x[0];}, groupingBy(y->{return y[7];})));
 		
 		List<Map<String, String>> list = new ArrayList<>();
 		
@@ -164,6 +147,51 @@ public class GroupStatistics {
 			list.add(resultMap);
 		});
 		 
+		return list;
+	}
+	
+	/**
+	 * 根据用例创建人统计group中case执行结果
+	 * @return
+	 */
+	public List<Map<String, String>>  statisGroupCaseByAuthor(){
+		List<Object[]> statis = interfaceDefinitionRepository.statisGroupCaseByAuthor();
+		
+		//根据case id分组，再根据创建人分组
+		Map<Object, Map<Object, List<Object[]>>>  map = statis.stream().collect(groupingBy(x->x[3], groupingBy(y->y[6])));
+		
+		Map<String, Map<String, String>> resMap = new HashMap<>();
+		
+		map.forEach((k,v)->{
+			v.forEach((k1,v1)->{
+				long count = v1.stream().filter(x->{return x[5]==null || x[5].equals(false);}).count();
+				
+				String createdBy = String.valueOf(k1);
+				
+				if(!resMap.containsKey(createdBy)){
+					Map<String, String> subResMap = new HashMap<>();
+					subResMap.put("successSize", "0");
+					subResMap.put("failSize", "0");
+					resMap.put(createdBy, subResMap);
+				}
+				
+				if(count>0){
+					String failSize = resMap.get(createdBy).get("failSize");
+					resMap.get(createdBy).put("failSize", String.valueOf(1+Integer.parseInt(failSize)));
+				}else{
+					String successSize = resMap.get(createdBy).get("successSize");
+					resMap.get(createdBy).put("successSize", String.valueOf(1+Integer.parseInt(successSize)));
+				}
+			});
+		});
+		
+		List<Map<String, String>> list = new ArrayList<>();
+		
+		resMap.forEach((k,v)->{
+			v.put("createdBy", k);
+			list.add(v);
+		});
+		
 		return list;
 	}
 	

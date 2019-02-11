@@ -87,5 +87,14 @@ public interface InterfaceDefinitionRepository extends JpaRepository<InterfaceDe
 		") tmp1, result_history rh, result_detail rd " +
 		"where tmp1.history_id = rh.id and tmp1.history_id = rd.history_id", nativeQuery = true)
     List<Object[]> groupStatisDetail();
+    
+    //根据创建人创建
+    @Query(value="select temp.gid, temp.created_time, temp.hid, rd.tc_id, rd.api_id, rd.result, tc.created_by from " +
+          "(" +
+          "select tg.id as gid, max(rh.created_time) as created_time, max(rh.id) as hid " +
+          "from test_group tg, result_history rh where tg.id=rh.group_id and tg.optstatus != 2 group by tg.id " +
+          ") temp, result_detail rd, test_case tc " +
+          "where temp.hid=rd.history_id and rd.tc_id=tc.id and tc.optstatus!=2", nativeQuery = true)
+    List<Object[]> statisGroupCaseByAuthor();
 
 }

@@ -83,8 +83,9 @@ public class RedisUtil {
     
     public boolean setHashMap(String key, Map<String, String> map, long timeout){
     	try{
-    		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+//    		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
     		redisTemplate.opsForHash().putAll(key, map);
+    		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
     		return true;
     	}catch(Exception e){
     		e.printStackTrace();
@@ -95,8 +96,9 @@ public class RedisUtil {
     //保存字符数组
     public boolean listLeftSetAll(String key, List<String> list, long timeout){
     	try{
-    		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+//    		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
     		redisTemplate.opsForList().leftPushAll(key, list);
+    		redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
     		return true;
     	}catch(Exception e){
     		e.printStackTrace();

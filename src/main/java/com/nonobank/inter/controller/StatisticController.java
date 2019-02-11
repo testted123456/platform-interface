@@ -107,11 +107,24 @@ public class StatisticController {
 		return ResultUtil.success(map);
 	}
 	
+	
 	@GetMapping(value="groupStatisDetail")
 	@ResponseBody
 	public Result groupStatisDetail(){
-		logger.info("开始统计用例执行统计...");
-		List<Map<String, String>> map = groupStatistics.groupStatisDetail();
-		return ResultUtil.success(map);
+		logger.info("开始统计测试集执行结果...");
+		List<Map<String, String>> list = groupStatistics.groupStatisDetail();
+		return ResultUtil.success(list);
+	}
+	
+	/**
+	 * group中case成功、失败数
+	 * @return
+	 */
+	@GetMapping(value="statisGroupCaseByAuthor")
+	@ResponseBody
+	public Result statisGroupCaseByAuthor(){
+		logger.info("开始统计根据创建人统计测试集中的case执行情况...");
+		List<Map<String, String>> list = groupStatistics.statisGroupCaseByAuthor();
+		return ResultUtil.success(list);
 	}
 }

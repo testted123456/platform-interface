@@ -17,6 +17,9 @@ import com.nonobank.inter.util.RedisUtil;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.Job;
+
+import redis.clients.jedis.Jedis;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,23 +52,7 @@ public class JenkinsServiceImpl implements JenkinsService {
 		}
 	}
 	
-	//@Override
-	/*public JenkinsServer getJenkinsServer() {
-		// TODO Auto-generated method stub
-		
-		if(jServer == null || !jServer.isRunning()){
-			try {
-				jServer = new JenkinsServer(new URI("http://192.168.1.122:8081/jenkins"), "admin", "123456");
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		return jServer;
-	}*/
-
-//	@Override
+	@Override
 	public List<Map<String, String>> getPackageResult() {
 		// TODO Auto-generated method stub
 		initJenkinsServer();
@@ -140,23 +127,23 @@ public class JenkinsServiceImpl implements JenkinsService {
 		return resultList;
 	}
 	
-//	public static void main(String [] args){
-//		JenkinsServiceImpl jenkinsServiceImpl = new JenkinsServiceImpl();
-////		
-////		
-//		jenkinsServiceImpl.getJenkinsServer();
-//		List<Map<String, String>> list = jenkinsServiceImpl.getPackageResult();
-////		
-////		for(Map<String, String> map : list){
-////			map.forEach((k,v)->{
-////				System.out.print(k + ":" + v);
-////			});
-////		}
-//		
-//		long timestamp = System.currentTimeMillis();
-//		Date date = new Date(timestamp);
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		System.out.println(sdf.format(date));
-//	}
+	/*public static void main(String [] args){
+		Jedis jedis = new Jedis("192.168.1.121", 6379);
+		List<String> list = jedis.lrange("jenkinsJobsName", 0, 50);
+		
+		for(String s:list){
+			Map<String, String> map = jedis.hgetAll(s);
+			if(map.size() > 0){
+				jedis.hdel(s, "env", "name", "result", "time");
+			}
+			
+			System.out.print(s);
+		}
+		
+		for(String s:list){
+			jedis.lrem("jenkinsJobsName", 0, s);
+		}
+		
+	}*/
 
 }

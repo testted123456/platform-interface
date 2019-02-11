@@ -1,5 +1,5 @@
 server:
- port: 9100
+ port: 19100
 # context-path: /inter
 httpServer:
   caseServer: http://127.0.0.1:9200/case/
@@ -13,11 +13,11 @@ spring:
     timeout: 20000
   session:
     store-type: redis
-  datasource:
-    url: jdbc:mysql://192.168.1.121:3306/testingplatform?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: Imobpay123456!
-    driver-class-name: com.mysql.jdbc.Driver
+#  datasource:
+#    url: jdbc:mysql://192.168.1.121:3306/testingplatform?useUnicode=true&characterEncoding=utf-8
+#    username: root
+#    password: Imobpay123456!
+#    driver-class-name: com.mysql.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
